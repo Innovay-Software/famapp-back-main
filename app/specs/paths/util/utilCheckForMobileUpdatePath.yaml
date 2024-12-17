@@ -1,0 +1,44 @@
+get:
+  operationId: utilCheckForUpdatePath
+  tags:
+    - util
+  summary: Check for update
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+    - name: clientOs
+      in: path
+      required: true
+      schema:
+        type: string
+    - name: clientVersion
+      in: path
+      required: true
+      schema:
+        type: string
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          hasUpdate:
+                            type: boolean
+                          forceUpdate:
+                            type: boolean
+                          version:
+                            type: string
+                          title:
+                            type: string
+                          content:
+                            type: string
+                          url:
+                            type: string

@@ -1,0 +1,25 @@
+post:
+  operationId: lockerNoteListPath
+  tags:
+    - lockerNotes
+  summary: List user's locker notes
+  security:
+    - bearerAuth: []
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          notes:
+                            $ref: "../../schemas/LockerNote.yaml"

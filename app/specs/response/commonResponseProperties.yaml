@@ -1,0 +1,15 @@
+properties:
+  success:
+    type: boolean
+  requester:
+    type: string
+  responseDateTime:
+    type: string
+  # ip:
+  #   type: string
+  # method:
+  #   type: string
+  accessToken:
+    type: string
+  refreshToken:
+    type: string

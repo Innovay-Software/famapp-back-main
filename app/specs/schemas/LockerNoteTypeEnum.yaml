@@ -1,0 +1,5 @@
+type: string
+description: locker note's type
+enum:
+  - baby
+  - normal

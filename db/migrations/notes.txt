@@ -1,0 +1,4 @@
+Using golang-migrate
+
+ex:
+./migrate -database "mysql://root:zXNohXMyD2R1TiViaa@tcp(db:3306)/innovay_baby" -path ./db/migrations up

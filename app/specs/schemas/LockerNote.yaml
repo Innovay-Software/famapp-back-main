@@ -1,0 +1,26 @@
+type: object
+required:
+  - id
+  - ownerId
+  - title
+  - content
+  - inviteeIds
+properties:
+  id:
+    type: integer
+    format: int64
+  ownerId:
+    description: owner's userId
+    type: integer
+    format: int64
+  title:
+    description: title of the note
+    type: string
+  content:
+    description: text content of the note
+    type: string
+  inviteeIds:
+    description: the userIds of all invitees
+    type: array
+    items:
+      type: integer

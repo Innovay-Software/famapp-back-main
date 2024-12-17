@@ -1,0 +1,13 @@
+description: Bad Request
+content:
+  application/json:
+    schema:
+      type: object
+      allOf:
+        - $ref: "./commonResponseProperties.yaml"
+        - properties:
+            errorMessage:
+              type: string
+              example: Invalid Input
+            data:
+              type: object

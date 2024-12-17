@@ -1,0 +1,13 @@
+description: System Error
+content:
+  application/json:
+    schema:
+      type: object
+      allOf:
+        - $ref: "./commonResponseProperties.yaml"
+        - properties:
+            errorMessage:
+              type: string
+              example: Something went wrong, please try again later
+            data:
+              type: object

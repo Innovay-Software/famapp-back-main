@@ -1,0 +1,56 @@
+post:
+  operationId: authMobileLoginPath
+  tags:
+    - auth
+  summary: Mobile login using mobile number and password
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - mobile
+            - password
+            - deviceToken
+          properties:
+            mobile:
+              type: string
+              example: "1234567890"
+              x-oapi-codegen-extra-tags:
+                validate: min=4,max=20
+            password:
+              type: string
+              example: "123456"
+              x-oapi-codegen-extra-tags:
+                validate: min=6,max=50
+            deviceToken:
+              type: string
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object
+                        required:
+                          - user
+                          - members
+                        properties:
+                          user:
+                            $ref: "../../schemas/User.yaml"
+                          members:
+                            type: array
+                            items:
+                              $ref: "../../schemas/UserMember.yaml"
+
+

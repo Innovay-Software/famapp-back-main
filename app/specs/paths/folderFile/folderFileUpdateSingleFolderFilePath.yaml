@@ -1,0 +1,36 @@
+post:
+  operationId: folderFileUpdateSingleFolderFilePath
+  tags:
+    - folderFile
+  security:
+    - bearerAuth: []
+  summary: Update one single folder file
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+  requestBody:
+    content:
+      application/json:
+        schema:
+          required:
+            - folderFileId
+          properties:
+            folderFileId:
+              type: integer
+              format: int64
+            remark:
+              type: string
+            isPrivate:
+              type: boolean
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object

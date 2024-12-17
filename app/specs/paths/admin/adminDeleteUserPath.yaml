@@ -1,0 +1,25 @@
+post:
+  operationId: adminDeleteUserPath
+  tags:
+    - admin
+  summary: Admin delete user
+  security:
+    - bearerAuth: []
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+    - name: uuid
+      in: path
+      required: true
+      schema:
+        type: string
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"

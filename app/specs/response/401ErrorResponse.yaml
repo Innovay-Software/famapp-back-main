@@ -1,0 +1,13 @@
+description: Unauthorized
+content:
+  application/json:
+    schema:
+      type: object
+      allOf:
+        - $ref: "./commonResponseProperties.yaml"
+        - properties:
+            errorMessage:
+              type: string
+              example: Permission Denied
+            data:
+              type: object

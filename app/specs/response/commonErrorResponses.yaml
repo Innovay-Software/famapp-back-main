@@ -1,0 +1,7 @@
+responses:
+  '400':
+    $ref: "./400ErrorResponse.yaml"
+  '401':
+    $ref: "./401ErrorResponse.yaml"
+  '500':
+    $ref: "./500ErrorResponse.yaml"

@@ -1,0 +1,8 @@
+package: api
+generate:
+  gin-server: true
+  models: true
+  embedded-spec: true
+  # strict-server: true # Todo: use strict-server mode to strictly validate response schema
+  # client: true
+output: api/api.oapi-codegen.generated.go

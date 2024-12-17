@@ -1,0 +1,50 @@
+post:
+  operationId: folderFileGetFolderFilesBeforeMicroTimestampShotAt
+  tags:
+    - folderFile
+  summary: Get folder files before date time
+  security:
+    - bearerAuth: []
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+    - name: folderId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    - name: microTimestamp
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+    - name: pivotDate
+      description: in "2020-01-21" format or "-" to indicate current date
+      example: "2020-01-21"
+      in: path
+      required: true
+      schema:
+        type: string
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          folder:
+                            $ref: "../../schemas/Folder.yaml"
+                          folderFiles:
+                            type: array
+                            items:
+                              $ref: "../../schemas/FolderFile.yaml"
+                          hasMore:
+                            type: boolean

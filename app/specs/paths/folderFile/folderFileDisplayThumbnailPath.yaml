@@ -1,0 +1,25 @@
+get:
+  operationId: folderFileDisplayThumbnailPath
+  tags:
+    - folderFile
+  security:
+    - bearerAuth: []
+  summary: Display folder file
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+    - name: folderFileId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        "200":
+          description: "Success"
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary

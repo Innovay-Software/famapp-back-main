@@ -1,0 +1,62 @@
+post:
+  operationId: adminAddUserPath
+  tags:
+    - admin
+  summary: Admin add user
+  security:
+    - bearerAuth: []
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - name
+            - mobile
+            - password
+            - lockerPasscode
+            - role
+            - familyId
+          properties:
+            name:
+              type: string
+              x-oapi-codegen-extra-tags:
+                validate: min=1,max=40
+            mobile:
+              type: string
+              x-oapi-codegen-extra-tags:
+                validate: omitempty,min=4,max=20
+            password:
+              type: string
+              x-oapi-codegen-extra-tags:
+                validate: omitempty,min=6,max=50
+            lockerPasscode:
+              type: string
+              x-oapi-codegen-extra-tags:
+                validate: omitempty,min=6,max=6
+            role:
+              type: string
+              x-oapi-codegen-extra-tags:
+                validate: omitempty
+              # Todo, change role to enum:
+              # $ref: "../../schemas/UserRoleEnum.yaml"
+            familyId:
+              type: integer
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          user:
+                            $ref: "../../schemas/User.yaml"

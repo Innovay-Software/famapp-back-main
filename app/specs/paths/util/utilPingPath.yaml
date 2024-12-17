@@ -1,0 +1,24 @@
+get:
+  operationId: utilPingPath
+  tags:
+    - util
+  summary: Ping for health
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          ping:
+                            type: string

@@ -1,0 +1,23 @@
+get:
+  operationId: utilDisplayUserAvatarPath
+  tags:
+    - util
+  summary: Display user avatar
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+    - name: userId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        "200":
+          description: "Success"
+          content:
+            image/png:
+              schema:
+                type: string
+                format: binary

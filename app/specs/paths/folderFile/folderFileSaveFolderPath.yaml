@@ -1,0 +1,70 @@
+post:
+  operationId: folderFileSaveFolderPath
+  tags:
+    - folderFile
+  security:
+    - bearerAuth: []
+  summary: Save folder
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+    - name: folderId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - ownerId
+            - parentId
+            - title
+            - cover
+            - type
+            - isDefault
+            - isPrivate
+            - metadata
+            - inviteeIds
+          properties:
+            ownerId:
+              type: integer
+              format: int64
+            parentId:
+              type: integer
+              format: int64
+            title:
+              type: string
+            cover:
+              type: string
+            type:
+              type: string
+            isDefault:
+              type: boolean
+            isPrivate:
+              type: boolean
+            metadata:
+              type: object
+            inviteeIds:
+              type: array
+              items:
+                type: integer
+                format: int64
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          folder:
+                            $ref: "../../schemas/Folder.yaml"

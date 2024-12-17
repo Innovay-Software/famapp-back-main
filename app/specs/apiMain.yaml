@@ -1,0 +1,119 @@
+openapi: 3.0.2
+servers:
+  - url: http://localhost:8080
+  - url: https://famapp.innovay.dev
+info:
+  version: 2.0.0
+  title: Family App - Livechat, Media File Hosting, Wiki Notes
+  description: This project is designed for families to share data between each family members. Livechat, Media File Hosting, and Wiki Notes are some of its core features. The purpose of this project is to control data security by hosting a dedicated server that's maintained by the family trusted members instead of other different big tech companies.
+  contact:
+    name: Logan Dai
+    url: https://logan.innovay.dev
+    email: logan.dai@innovay.dev
+  license:
+    name: MIT
+
+# Relative URL to external documentation
+externalDocs:
+  url: https://logan.innovay.dev
+  description: Find more info here
+
+paths:
+  /api/v2/auth/mobile-login:
+    $ref: "./paths/auth/mobileLoginPath.yaml"
+  # /api/v2/auth/logout:
+  #   $ref: "./paths/auth/logoutPath.yaml"
+  /api/v2/auth/access-token-login:
+    $ref: "./paths/auth/accessTokenLoginPath.yaml"
+  /api/v2/admin/list-all-users/{afterId}:
+    $ref: "./paths/admin/adminListUsersPath.yaml"
+  /api/v2/admin/add-user:
+    $ref: "./paths/admin/adminAddUserPath.yaml"
+  /api/v2/admin/update-user/{userId}:
+    $ref: "./paths/admin/adminSaveUserPath.yaml"
+  /api/v2/admin/delete-user/{uuid}:
+    $ref: "./paths/admin/adminDeleteUserPath.yaml"
+
+  # # /communicator/download-folder-file/{filename}/{type}:
+  # #   $ref: ""
+  # # /communicator/sync-folder-file-to-peer-servers:
+  # #   $ref: ""
+
+  /api/v2/folder/save-folder/{folderId}:
+    $ref: "./paths/folderFile/folderFileSaveFolderPath.yaml"
+  /api/v2/folder/delete-folder/{folderId}:
+    $ref: "./paths/folderFile/folderFileDeleteFolderPath.yaml"
+
+  /api/v2/folder-files/get-folder-files-after-micro-timestamp/{folderId}/{pivotDate}/{microTimestamp}:
+    $ref: "./paths/folderFile/folderFileGetFolderFilesAfterMicroTimestampPath.yaml"
+  /api/v2/folder-files/get-folder-files-before-micro-timestamp/{folderId}/{pivotDate}/{microTimestamp}:
+    $ref: "./paths/folderFile/folderFileGetFolderFilesBeforeMicroTimestampPath.yaml"
+  /api/v2/folder-files/chunk-upload-folder-file/{folderId}:
+    $ref: "./paths/folderFile/folderFileChunkUploadPath.yaml"
+  /api/v2/folder-files/chunk-upload-folder-file-init-upload-id:
+    $ref: "./paths/folderFile/folderFileGetChunkUploadIdPath.yaml"
+  /api/v2/folder-files/delete-files/{folderId}:
+    $ref: "./paths/folderFile/folderFileDeleteFolderFilesPath.yaml"
+  /api/v2/folder-files/update-single-folder-file:
+    $ref: "./paths/folderFile/folderFileUpdateSingleFolderFilePath.yaml"
+  /api/v2/folder-files/update-multiple-folder-files:
+    $ref: "./paths/folderFile/folderFileUpdateMultipleFolderFilesPath.yaml"
+  
+  /api/v2/folder-file-display/folder-file/{folderFileId}:
+    $ref: "./paths/folderFile/folderFileDisplayPath.yaml"
+  /api/v2/folder-file-display/folder-file-thumbnail/{folderFileId}:
+    $ref: "./paths/folderFile/folderFileDisplayThumbnailPath.yaml"
+  /api/v2/folder-file-display/folder-file-original/{folderFileId}:
+    $ref: "./paths/folderFile/folderFileDisplayOriginalPath.yaml"
+  
+  /api/v2/locker-notes/list-notes:
+    $ref: "./paths/lockerNote/listLockerNotesPath.yaml"
+  /api/v2/locker-notes/save-note/{noteId}:
+    $ref: "./paths/lockerNote/saveLockerNotePath.yaml"
+  /api/v2/locker-notes/delete-note/{noteId}:
+    $ref: "./paths/lockerNote/deleteLockerNotePath.yaml"
+
+
+  # /user/set-user-avatar:
+  #   $ref: ""
+  # /user/get-users:
+  #   $ref: ""
+  # /user/update-device-token:
+  #   $ref: ""
+  /api/v2/user/update-profile:
+    $ref: "./paths/user/updateProfilePath.yaml"
+  
+  /api/v2/util/config/{configKey}:
+    $ref: "./paths/util/utilConfigPath.yaml"
+  /api/v2/util/ping:
+    $ref: "./paths/util/utilPingPath.yaml"
+  /api/v2/util/user-avatar/{userId}:
+    $ref: "./paths/util/utilDisplayUserAvatarPath.yaml"
+  /api/v2/util/check-for-mobile-update/{clientOs}/{clientVersion}:
+    $ref: "./paths/util/utilCheckForMobileUpdatePath.yaml"
+  /api/v2/util/base64-chunked-upload-file:
+    $ref: "./paths/util/utilBase64ChunkUploadPath.yaml"
+  # /util/upload-image:
+  #   $ref: ""
+  # /util/upload-file:
+  #   $ref: ""
+  # /util/config/{configKey}:
+  #   $ref: ""
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      # $ref: "./securityScheme.yaml"
+  schemas:
+    User:
+      $ref: "./schemas/User.yaml"
+    UserMember: 
+      $ref: "./schemas/UserMember.yaml"
+    LockerNote:
+      $ref: "./schemas/LockerNote.yaml"
+    UploadedDocument:
+      $ref: "./schemas/UploadedDocument.yaml"

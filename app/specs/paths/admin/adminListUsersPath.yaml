@@ -1,0 +1,35 @@
+post:
+  operationId: adminListUsersPath
+  tags:
+    - admin
+  summary: Admin list users
+  security:
+    - bearerAuth: []
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+    - name: afterId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          users:
+                            type: array
+                            items:
+                              $ref: "../../schemas/UserMember.yaml"
+                          hasMore:
+                            type: boolean

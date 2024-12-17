@@ -1,0 +1,42 @@
+post:
+  operationId: folderFileUpdateMultipleFolderFilesPath
+  tags:
+    - folderFile
+  security:
+    - bearerAuth: []
+  summary: Update multiple folder files
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+  requestBody:
+    content:
+      application/json:
+        schema:
+          required:
+            - folderFileIds
+          properties:
+            folderFileIds:
+              type: array
+              minItems: 1
+              maxItems: 100
+              items:
+                type: integer
+                format: int64
+            newFolderId:
+              type: integer
+              format: int64
+            newShotAtTimestamp:
+              type: integer
+              format: int64
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object

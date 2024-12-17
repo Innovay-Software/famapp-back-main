@@ -1,0 +1,35 @@
+post:
+  operationId: authLogoutPath
+  tags:
+    - auth
+  summary: Mobile login using mobile number and password
+  security:
+    - bearerAuth: []
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object
+                        required:
+                          - user
+                          - members
+                        properties:
+                          user:
+                            $ref: "../../schemas/User.yaml"
+                          members:
+                            type: array
+                            items:
+                              $ref: "../../schemas/UserMember.yaml"
+
+

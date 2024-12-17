@@ -1,0 +1,28 @@
+post:
+  operationId: lockerNoteDeletePath
+  tags:
+    - lockerNotes
+  summary: Delete user's locker note
+  security:
+    - bearerAuth: []
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+    - name: noteId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object

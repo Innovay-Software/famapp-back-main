@@ -1,0 +1,6 @@
+name: Accept-Language
+in: header
+description: Accepted language from client side
+required: false
+schema:
+  type: string

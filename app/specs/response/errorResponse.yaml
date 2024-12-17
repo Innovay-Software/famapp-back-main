@@ -1,0 +1,12 @@
+description: General Error
+content:
+  application/json:
+    schema:
+      type: object
+      allOf:
+        - $ref: "./commonResponseProperties.yaml"
+        - properties:
+            errorMessage:
+              type: string
+            data:
+              type: object

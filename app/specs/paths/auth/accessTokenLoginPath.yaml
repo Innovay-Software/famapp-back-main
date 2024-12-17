@@ -1,0 +1,44 @@
+post:
+  operationId: authAccessTokenLoginPath
+  tags:
+    - auth
+  summary: Refresh access token if it's about to expire
+  security:
+    - bearerAuth: []
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+  requestBody:
+    required: true
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - deviceToken
+          properties:
+            deviceToken:
+              type: string
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        '200':
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object
+                        required:
+                          - user
+                          - members
+                        properties:
+                          user:
+                            $ref: "../../schemas/User.yaml"
+                          members:
+                            type: array
+                            items:
+                              $ref: "../../schemas/UserMember.yaml"

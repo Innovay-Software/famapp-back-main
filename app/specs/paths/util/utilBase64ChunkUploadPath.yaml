@@ -1,0 +1,54 @@
+post:
+  operationId: utilBase64ChunkUploadPath
+  tags:
+    - util
+  summary: Base64 encoded chunk upload
+  security:
+    - bearerAuth: []
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - base64EncodedContent
+            - fileName
+            - hasMore
+            - chunkedFileName
+          properties:
+            base64EncodedContent:
+              type: string
+            fileName:
+              type: string
+            chunkedFileName:
+              type: string
+            hasMore:
+              type: boolean
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                type: object
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          remoteFileId:
+                            type: integer
+                            format: int64
+                          uploaded:
+                            type: boolean
+                          chunkedFileName:
+                            type: string
+                          hasMore:
+                            type: boolean
+                          document:
+                            $ref: "../../schemas/UploadedDocument.yaml"

@@ -1,0 +1,7 @@
+type: string
+description: user's roles
+enum:
+  - member
+  - manager
+  - admin
+  - superadmin

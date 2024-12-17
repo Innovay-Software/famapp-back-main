@@ -1,0 +1,49 @@
+post:
+  operationId: lockerNoteSavePath
+  tags:
+    - lockerNotes
+  summary: Save user's locker note
+  security:
+    - bearerAuth: []
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+    - name: noteId
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
+  requestBody:
+    content:
+      application/json:
+        schema:
+          type: object
+          required:
+            - title
+            - content
+          properties:
+            title:
+              type: string
+            content:
+              type: string
+            inviteeIds:
+              type: array
+              items:
+                type: integer
+                format: int64
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          note:
+                            $ref: "../../schemas/LockerNote.yaml"

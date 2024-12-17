@@ -1,0 +1,27 @@
+post:
+  operationId: folderFileGetChunkUploadIdPath
+  tags:
+    - folderFileUpload
+  security:
+    - bearerAuth: []
+  summary: Folder file chunk upload
+  parameters:
+    - $ref: "../../headers/acceptLanguageHeader.yaml"
+  allOf:
+    - $ref: "../../response/commonErrorResponses.yaml"
+    - responses:
+        "200":
+          description: "Success"
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "../../response/commonResponseProperties.yaml"
+                  - properties:
+                      data:
+                        type: object
+                        properties:
+                          uploadId:
+                            type: integer
+                            format: int64
+

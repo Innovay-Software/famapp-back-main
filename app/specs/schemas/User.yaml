@@ -1,0 +1,28 @@
+type: object
+required:
+  - id
+  - uuid
+  - role
+  - name
+  - email
+  - mobile
+  - avatar
+  - lockerPasscode
+properties:
+  id:
+    type: integer
+    format: int64
+  uuid:
+    type: string
+  role:
+    $ref: "./UserRoleEnum.yaml"
+  name:
+    type: string
+  email:
+    type: string
+  mobile:
+    type: string
+  avatar:
+    type: string
+  lockerPasscode:
+    type: string

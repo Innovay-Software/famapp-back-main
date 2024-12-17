@@ -1,0 +1,45 @@
+type: object
+required:
+  - id
+  - ownerId
+  - parentId
+  - title
+  - cover
+  - type
+  - metadata
+  - isDefault
+  - isPrivate
+  - totalFiles
+  - earliestShotAt
+  - latestShotAt
+properties:
+  id:
+    type: integer
+    format: int64
+  ownerId:
+    type: integer
+    format: int64
+  parentId:
+    type: integer
+    format: int64
+  title:
+    type: string
+  cover:
+    type: string
+  type:
+    type: string
+  metadata:
+    type: object
+  isDefault:
+    type: boolean
+  isPrivate:
+    type: boolean
+  totalFiles:
+    type: integer
+    format: int64
+  earliestShotAt:
+    type: string
+    format: date-time
+  latestShotAt:
+    type: string
+    format: date-time
