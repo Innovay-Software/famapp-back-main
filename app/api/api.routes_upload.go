@@ -50,10 +50,10 @@ func (s *ApiServerInterfaceImpl) UtilBase64ChunkUploadPath(
 		apiRespFailError(c, err, nil)
 		return
 	}
-
+	
 	// Handle request
 	res, err := utilHandlers.Base64ChunkUploadFileHandler(
-		c, user, req.Base64EncodedContent, req.FileName,
+		c, user, req.Base64EncodedContent, req.FileName, 
 		req.ChunkedFileName, req.HasMore,
 	)
 	handleApiResponse(c, res, err)
@@ -79,7 +79,7 @@ func (s *ApiServerInterfaceImpl) FolderFileChunkUploadPath(
 
 	// Handle request
 	res, err := folderFileHandlers.FolderFileChunkUploadHandler(
-		c, user, folderId, params.UploadId,
+		c, user, folderId, params.UploadId, 
 		params.HasMore == "1", params.Filename, chunkIndex,
 	)
 	handleApiResponse(c, res, err)
