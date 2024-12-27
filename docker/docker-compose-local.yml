@@ -1,0 +1,22 @@
+# docker-compose -f docker-compose-local.yml up -d --no-recreate
+# docker-compose -f docker-compose-local.yml down
+
+# Use root/example as user/password credentials
+version: '3.1'
+
+services:
+  famapp-mainv2:
+    container_name: famapp-mainv2
+    image: ealton/famapp-back
+    volumes:
+      - ../:/app/
+    ports:
+      - "15180:80"
+    networks:
+      - backend
+    command: ["sleep", "10d"]
+
+networks:
+  backend:
+    name: backend-network
+    external: true
