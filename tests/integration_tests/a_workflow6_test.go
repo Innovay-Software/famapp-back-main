@@ -101,32 +101,32 @@ func workflow6C_Test(t *testing.T, r *gin.Engine) {
 
 	// Insert ios version 3.6.8, effective now
 	iosAppVersion := models.AppVersion{
-		OS:            "ios",
-		Version:       "3.6.8",
-		Title:         "3.6.8 Released",
-		Content:       "3.6.8 Released Content",
-		Link:          "https://download.com/latest",
-		EffectiveDate: time.Now(),
+		OS:          "ios",
+		Version:     "3.6.8",
+		Title:       "3.6.8 Released",
+		Content:     map[string]any{"note:": "3.6.8 Released Content"},
+		Link:        "https://download.com/latest",
+		EffectiveOn: time.Now(),
 	}
 
 	// Insert android version 3.6.8, effective now
 	androidAppVersion1 := models.AppVersion{
-		OS:            "android",
-		Version:       "3.6.8",
-		Title:         "3.6.8 Released",
-		Content:       "3.6.8 Released Content",
-		Link:          "https://download.com/latest",
-		EffectiveDate: time.Now(),
+		OS:          "android",
+		Version:     "3.6.8",
+		Title:       "3.6.8 Released",
+		Content:     map[string]any{"note:": "3.6.8 Released Content"},
+		Link:        "https://download.com/latest",
+		EffectiveOn: time.Now(),
 	}
 
 	// Insert android version 4.1.0, effective 24 hours from now
 	androidAppVersion2 := models.AppVersion{
-		OS:            "android",
-		Version:       "4.1.0",
-		Title:         "4.1.0 Released",
-		Content:       "4.1.0 Released Content",
-		Link:          "https://download.com/latest",
-		EffectiveDate: time.Now().Add(time.Second * 3600 * 24),
+		OS:          "android",
+		Version:     "4.1.0",
+		Title:       "4.1.0 Released",
+		Content:     map[string]any{"note:": "4.1.0 Released Content"},
+		Link:        "https://download.com/latest",
+		EffectiveOn: time.Now().Add(time.Second * 3600 * 24),
 	}
 
 	errA := insertModel(&iosAppVersion)

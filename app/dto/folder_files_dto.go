@@ -15,7 +15,7 @@ type FolderFileChunkUploadFileResponse struct {
 
 type FolderFileGetChunkUploadFileIdResponse struct {
 	ApiResponseBase `json:",squash"`
-	UploadId        int64 `json:"uploadId"`
+	UploadId        uint64 `json:"uploadId"`
 }
 
 // type GetFolderFilesBeforeIdRequestUri struct {
@@ -26,10 +26,10 @@ type FolderFileGetChunkUploadFileIdResponse struct {
 
 // type GetFolderFilesBeforeIdRequest struct {
 // 	ApiRequestBase
-// 	BeforeShotAt string `json:"beforeShotAt" binding:"omitempty"`
+// 	BeforeTakenOn string `json:"beforeTakenOn" binding:"omitempty"`
 // }
 
-type GetFolderFilesBeforeShotAtResponse struct {
+type GetFolderFilesBeforeTakenOnResponse struct {
 	ApiResponseBase `json:",squash"`
 	FolderFiles     *[]models.FolderFile `json:"folderFiles"`
 	Folder          *models.Folder       `json:"folder"`
@@ -44,10 +44,10 @@ type GetFolderFilesBeforeShotAtResponse struct {
 
 // type GetFolderFilesAfterIdRequest struct {
 // 	ApiRequestBase
-// 	AfterShotAt string `json:"afterShotAt" binding:"required"`
+// 	AfterTakenOn string `json:"afterTakenOn" binding:"required"`
 // }
 
-type GetFolderFilesAfterShotAtResponse struct {
+type GetFolderFilesAfterTakenOnResponse struct {
 	ApiResponseBase `json:",squash"`
 	FolderFiles     *[]models.FolderFile `json:"folderFiles"`
 	Folder          *models.Folder       `json:"folder"`
@@ -74,7 +74,7 @@ type UpdateSingleFolderFileResponse struct {
 // 	ApiRequestBase
 // 	FolderFileIds     []int64    `json:"fileIds" binding:"omitempty"`
 // 	NewFolderId       int64      `json:"newFolderId" binding:"omitempty"`
-// 	NewShotAtDateTime *time.Time `json:"newShotAtDateTime" binding:"omitempty"`
+// 	NewTakenOnDateTime *time.Time `json:"newTakenOnDateTime" binding:"omitempty"`
 // }
 
 type UpdateMultipleFolderFileResponse struct {

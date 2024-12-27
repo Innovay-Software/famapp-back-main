@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"os/exec"
 	"strconv"
 	"strings"
@@ -31,7 +30,6 @@ func ExtractImageExif(fileAbsPath string) (*map[string]any, error) {
 
 	exifString := string(exifByteSlice)
 	for _, line := range strings.Split(exifString, "\n") {
-		fmt.Println(line)
 		lineParts := strings.Split(line, "\t")
 		if len(lineParts) == 2 {
 			exifMap[lineParts[0]] = lineParts[1]

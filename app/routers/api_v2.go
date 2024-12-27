@@ -65,7 +65,7 @@ package routers
 // 		// ffGroup.POST("/update-multiple-folder-files", userHandlerWrapper(handlers.UpdateMultipleFolderFilesHandler))
 
 // 		// ffGroup.POST("/move-files-to-folder/:folderId", userHandlerWrapper(handlers.UnimplementedHandler))
-// 		// ffGroup.POST("/set-shot-at-date/:date", userHandlerWrapper(handlers.UnimplementedHandler))
+// 		// ffGroup.POST("/set-taken-on-date/:date", userHandlerWrapper(handlers.UnimplementedHandler))
 // 	}
 // 	// Locker Group
 // 	// lGroup := v2.Group("/locker-notes")

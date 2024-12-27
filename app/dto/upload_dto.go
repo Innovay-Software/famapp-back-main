@@ -12,7 +12,7 @@ type Base64ChunkUploadFileRequest struct {
 
 type Base64ChunkUploadFileResponse struct {
 	ApiResponseBase `json:",squash"`
-	RemoteFileId    int64          `json:"remoteFileId"`
+	RemoteFileId    uint64         `json:"remoteFileId"`
 	Uploaded        bool           `json:"uploaded"`
 	ChunkedFileName string         `json:"ChunkedFileName"`
 	Document        *models.Upload `json:"document"`

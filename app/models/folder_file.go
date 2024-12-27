@@ -14,9 +14,9 @@ import (
 type FolderFile struct {
 	BaseDbModel
 
-	PeerID                 int64          `gorm:"column:peer_id" json:"-" mapstructure:"peerId"`
-	OwnerID                int64          `gorm:"column:owner_id" json:"ownerId" mapstructure:"ownerId"`
-	FolderID               int64          `gorm:"column:folder_id" json:"folderId" mapstructure:"folderId"`
+	PeerID                 uint64          `gorm:"column:peer_id" json:"-" mapstructure:"peerId"`
+	OwnerID                uint64          `gorm:"column:owner_id" json:"ownerId" mapstructure:"ownerId"`
+	FolderID               uint64          `gorm:"column:folder_id" json:"folderId" mapstructure:"folderId"`
 	Disk                   string         `gorm:"column:disk" json:"-"`
 	FileName               string         `gorm:"column:file_name" json:"fileName"`
 	FileType               string         `gorm:"column:file_type" json:"fileType"`
@@ -32,12 +32,12 @@ type FolderFile struct {
 	Metadata               map[string]any `gorm:"column:metadata;serializer:json" json:"metadata" mapstructure:"metadata"`
 	HasExif                bool           `gorm:"column:has_exif; default:0" json:"hasExif"`
 	IsPrivate              bool           `gorm:"column:is_private; default:0" json:"isPrivate" mapstructure:"isPrivate"`
-	Views                  int64          `gorm:"column:views; default:0" json:"views"`
+	Views                  uint64          `gorm:"column:views; default:0" json:"views"`
 	SyncedAt               *time.Time     `gorm:"column:synced_at; null" json:"syncedAt"`
 	IsDownloading          bool           `gorm:"column:is_downloading; default:0" json:"-"`
-	ShotAt                 time.Time      `gorm:"column:shot_at" json:"shotAtOriginal" mapstructure:"shotAt"`
-	ShotAtString           string         `gorm:"-" json:"shotAt"`
-	IsPreprocessing        int            `gorm:"-" json:"isPreprocessing"`
+	TakenOn                time.Time      `gorm:"column:taken_on" json:"takenOnOriginal" mapstructure:"takenOn"`
+	TakenOnString          string         `gorm:"-" json:"takenOn"`
+	IsPreprocessing        bool            `gorm:"-" json:"isPreprocessing"`
 	MetadataSimple         map[string]any `gorm:"-" json:"metadataSimple"`
 }
 
@@ -47,25 +47,25 @@ func (FolderFile) TableName() string {
 
 // AfterSave hook
 func (ff *FolderFile) AfterSave(tx *gorm.DB) error {
-	// After folder file is saved, update the folder's totalFiles, earliest_shot_at, and latest_shot_at
+	// After folder file is saved, update the folder's totalFiles, earliest_taken_on, and latest_taken_on
 
 	if ff.FolderID > 0 {
 		var folder Folder
 		if err := tx.First(&folder, ff.FolderID).Error; err == nil {
-			// if file shots at before folder's earliest shot at date, update it
-			if folder.EarliestShotAt == nil || ff.ShotAt.Compare(*folder.EarliestShotAt) < 0 {
-				folder.EarliestShotAt = &ff.ShotAt
+			// if file taken on at before folder's earliest taken on date, update it
+			if folder.EarliestTakenOn == nil || ff.TakenOn.Compare(*folder.EarliestTakenOn) < 0 {
+				folder.EarliestTakenOn = &ff.TakenOn
 			}
-			// if file shots at after folder's latest shot at date, update it
-			if folder.LatestShotAt == nil || ff.ShotAt.Compare(*folder.LatestShotAt) > 0 {
-				folder.LatestShotAt = &ff.ShotAt
+			// if file taken on at after folder's latest taken on date, update it
+			if folder.LatestTakenOn == nil || ff.TakenOn.Compare(*folder.LatestTakenOn) > 0 {
+				folder.LatestTakenOn = &ff.TakenOn
 			}
 			var count int64
 			err = tx.Model(&FolderFile{}).Where("folder_id = ?", folder.ID).Count(&count).Error
 			if err != nil {
 				return err
 			}
-			folder.TotalFiles = count
+			folder.TotalFiles = uint64(count)
 			tx.Save(&folder)
 		}
 	}
@@ -108,9 +108,9 @@ func (ff FolderFile) MarshalJSON() ([]byte, error) {
 	// Define a temporary struct to hold the marshalled data
 	type FolderFileMarshal struct {
 		BaseDbModel
-		PeerID                 int64          `gorm:"column:peer_id" json:"peerId"`
-		OwnerID                int64          `gorm:"column:owner_id" json:"ownerId"`
-		FolderID               int64          `gorm:"column:folder_id" json:"folderId"`
+		PeerID                 uint64         `gorm:"column:peer_id" json:"peerId"`
+		OwnerID                uint64         `gorm:"column:owner_id" json:"ownerId"`
+		FolderID               uint64         `gorm:"column:folder_id" json:"folderId"`
 		Disk                   string         `gorm:"column:disk" json:"disk"`
 		FileName               string         `gorm:"column:file_name" json:"fileName"`
 		FileType               string         `gorm:"column:file_type" json:"fileType"`
@@ -126,31 +126,31 @@ func (ff FolderFile) MarshalJSON() ([]byte, error) {
 		Metadata               map[string]any `gorm:"column:metadata;serializer:json" json:"-"`
 		HasExif                bool           `gorm:"column:has_exif; default:0" json:"hasExif"`
 		IsPrivate              bool           `gorm:"column:is_private; default:0" json:"isPrivate"`
-		Views                  int64          `gorm:"column:views; default:0" json:"views"`
+		Views                  uint64         `gorm:"column:views; default:0" json:"views"`
 		SyncedAt               *time.Time     `gorm:"column:synced_at; null" json:"syncedAt"`
 		IsDownloading          bool           `gorm:"column:is_downloading; default:0" json:"isDownloading"`
-		ShotAt                 time.Time      `gorm:"column:shot_at" json:"-"`
-		ShotAtString           string         `gorm:"-" json:"shotAt"`
-		IsPreprocessing        int            `gorm:"-" json:"isPreprocessing"`
+		TakenOn                time.Time      `gorm:"column:taken_on" json:"-"`
+		TakenOnString          string         `gorm:"-" json:"takenOn"`
+		IsPreprocessing        bool           `gorm:"-" json:"isPreprocessing"`
 		MetadataSimple         map[string]any `gorm:"-" json:"metadata"`
 	}
 
-	shotAtString := ff.ShotAt.UTC().Format(time.RFC3339)
-	if len(shotAtString) > 0 {
-		microsecond := strconv.Itoa(int(ff.ShotAt.UTC().UnixMicro()))
+	takenOnString := ff.TakenOn.UTC().Format(time.RFC3339)
+	if len(takenOnString) > 0 {
+		microsecond := strconv.Itoa(int(ff.TakenOn.UTC().UnixMicro()))
 		microsecond = microsecond[len(microsecond)-6:]
-		shotAtString = shotAtString[:len(shotAtString)-1] + "." + microsecond + shotAtString[len(shotAtString)-1:]
+		takenOnString = takenOnString[:len(takenOnString)-1] + "." + microsecond + takenOnString[len(takenOnString)-1:]
 	}
-	ff.ShotAtString = shotAtString
+	ff.TakenOnString = takenOnString
 
 	isChina := os.Getenv("APP_CHINA") == "true"
 	if isChina {
 		if ff.OriginalFilePath == "" {
-			ff.IsPreprocessing = 1
+			ff.IsPreprocessing = true
 		}
 	} else {
 		if ff.HwOriginalFilePath == "" || ff.GoogleFilePath == "" {
-			ff.IsPreprocessing = 1
+			ff.IsPreprocessing = true
 		}
 	}
 

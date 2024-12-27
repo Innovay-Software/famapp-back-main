@@ -1,6 +1,9 @@
 package models
 
 import (
+	"database/sql/driver"
+	"encoding/json"
+	"errors"
 	"reflect"
 	"time"
 
@@ -10,7 +13,7 @@ import (
 )
 
 type BaseDbModel struct {
-	ID        int64     `gorm:"column:id; primary_key; not null" json:"id"`
+	ID        uint64    `gorm:"column:id; primary_key; not null" json:"id"`
 	CreatedAt time.Time `gorm:"column:created_at" json:"createdAt"`
 	UpdatedAt time.Time `gorm:"column:updated_at" json:"updatedAt"`
 }
@@ -35,4 +38,21 @@ func PopulateModelFromMap[T any](modelInstance *T, data map[string]any) error {
 		return err
 	}
 	return nil
+}
+
+// JSONB Interface for JSONB Field of yourTableName Table
+type JSONB map[string]interface{}
+
+// Value Marshal
+func (a JSONB) Value() (driver.Value, error) {
+	return json.Marshal(a)
+}
+
+// Scan Unmarshal
+func (a *JSONB) Scan(value interface{}) error {
+	b, ok := value.([]byte)
+	if !ok {
+		return errors.New("type assertion to []byte failed")
+	}
+	return json.Unmarshal(b, &a)
 }

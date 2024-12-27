@@ -79,7 +79,7 @@ func (s *ApiServerInterfaceImpl) FolderFileChunkUploadPath(
 
 	// Handle request
 	res, err := folderFileHandlers.FolderFileChunkUploadHandler(
-		c, user, folderId, params.UploadId, 
+		c, user, uint64(folderId), params.UploadId, 
 		params.HasMore == "1", params.Filename, chunkIndex,
 	)
 	handleApiResponse(c, res, err)

@@ -18,7 +18,7 @@ type folderRepo struct {
 
 // Get user folders
 func (rp *folderRepo) GetUserFolders(
-	userId int64,
+	userId uint64,
 ) (
 	*[]models.Folder, error,
 ) {
@@ -52,7 +52,7 @@ func (rp *folderRepo) GetFolderByFieldName(
 
 // Save folder
 func (rp *folderRepo) SaveFolder(
-	user *models.User, folderId int64, updateData *map[string]any, checkUserAuthentication bool,
+	user *models.User, folderId uint64, updateData *map[string]any, checkUserAuthentication bool,
 ) (
 	*models.Folder, error,
 ) {
@@ -88,14 +88,14 @@ func (rp *folderRepo) SaveFolder(
 
 // Sync inviteeIDs
 func (rp *folderRepo) SyncInviteeIDs(
-	user *models.User, folder *models.Folder, newInviteeIds *[]int64,
+	user *models.User, folder *models.Folder, newInviteeIds *[]uint64,
 ) error {
 	if !rp.HasFolderUpdatePermission(user, folder) {
 		return errors.ApiErrorPermissionDenied
 	}
 
 	db := rp.mainDBCon
-	currentInviteeIds := []int64{}
+	currentInviteeIds := []uint64{}
 	db.Model(&models.FolderInvitee{}).
 		Where("folder_id = ?", folder.ID).
 		Pluck("invitee_id", &currentInviteeIds)
@@ -127,7 +127,7 @@ func (rp *folderRepo) SyncInviteeIDs(
 
 // Delete target folder with folderId
 func (rp *folderRepo) DeleteFolder(
-	user *models.User, folderId int64,
+	user *models.User, folderId uint64,
 ) error {
 	if folderId <= 0 {
 		return errors.ApiErrorParamInvalid

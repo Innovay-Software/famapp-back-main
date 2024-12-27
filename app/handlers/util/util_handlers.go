@@ -36,7 +36,7 @@ func CheckForMobileUpdate(c *gin.Context, clientOs, currentVersion string) (
 		HasUpdate:   false,
 		ForceUpdate: false,
 		Title:       "",
-		Content:     "",
+		Content:     map[string]any{},
 		Url:         "",
 	}
 

@@ -1,5 +1,5 @@
 get:
-  operationId: utilCheckForUpdatePath
+  operationId: utilCheckForMobileUpdatePath
   tags:
     - util
   summary: Check for update

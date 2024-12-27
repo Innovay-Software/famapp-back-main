@@ -41,7 +41,7 @@ func DeleteDbModel(model schema.Tabler) error {
 }
 
 // Query by primary key
-func QueryDbModelByPrimaryId(model schema.Tabler, id int64) error {
+func QueryDbModelByPrimaryId(model schema.Tabler, id uint64) error {
 	modelType := reflect.TypeOf(model).String()
 	if reflect.ValueOf(model).Kind() != reflect.Ptr {
 		return fmt.Errorf("a pointer to a model instance is required, not %s", modelType)

@@ -1,7 +1,7 @@
 package repositories
 
 import (
-	"sort"
+	"slices"
 
 	"github.com/innovay-software/famapp-main/app/errors"
 	"github.com/innovay-software/famapp-main/app/models"
@@ -17,7 +17,7 @@ type lockerNoteRepo struct {
 }
 
 func (rp *lockerNoteRepo) FindAllNotes(
-	userId int64,
+	userId uint64,
 ) (
 	*[]models.LockerNote, error,
 ) {
@@ -26,82 +26,75 @@ func (rp *lockerNoteRepo) FindAllNotes(
 	if userId <= 0 {
 		return nil, errors.ApiErrorParamInvalid
 	}
-	var notes1 []models.LockerNote
-	var notes2 []models.LockerNote
-
-	if err := db.Order("updated_at desc").
-		Preload("Owner").
-		Preload("Invitees").
-		Where("owner_id = ?", userId).
-		Find(&notes1).Error; err != nil {
-		return nil, err
-	}
+	var notes []models.LockerNote
 
 	if err := db.Order("updated_at desc").
 		Preload("Owner").
 		Preload("Invitees").
 		Where("id IN (SELECT note_id FROM locker_note_invitees WHERE invitee_id = ?)", userId).
-		Find(&notes2).Error; err != nil {
+		Find(&notes).Error; err != nil {
 		return nil, err
 	}
 
-	notes1 = append(notes1, notes2...)
-	sort.Slice(notes1, func(i, j int) bool {
-		return notes1[i].UpdatedAt.Compare(notes1[j].UpdatedAt) == 1
-	})
-
-	return &notes1, nil
+	return &notes, nil
 }
 
-// func (rp *lockerNoteRepo) SaveNote(
-// 	user *models.User, noteId int64, title string, content string, newInviteeIds []int64,
-// ) (
-// 	*models.LockerNote, error,
-// ) {
-// 	var note models.LockerNote
-// 	if noteId <= 0 {
-// 		// new noteId
-// 		note = models.LockerNote{OwnerID: user.ID, Title: title, Content: content}
-// 		if err := rp.db.Create(&note).Error; err != nil {
-// 			return nil, err
-// 		}
-// 		noteId = note.ID
-// 	} else {
-// 		// Find note record
-// 		if rp.db.Find(&note, noteId).RowsAffected == 0 {
-// 			note = models.LockerNote{OwnerID: user.ID, Title: title, Content: content}
-// 		}
+func (rp *lockerNoteRepo) SaveNote(
+	user *models.User, noteId uint64, title, content string, newInviteeIds *[]uint64,
+) (
+	*models.LockerNote, error,
+) {
+	if !slices.Contains(*newInviteeIds, user.ID) {
+		*newInviteeIds = append(*newInviteeIds, user.ID)
+	}
 
-// 		// Only owner has permissions to update
-// 		if note.OwnerID != user.ID {
-// 			return nil, errors.ApiErrorPermissionDenied
-// 		}
+	var lockerNote *models.LockerNote
+	if noteId > 0 {
+		currentLockerNote := &models.LockerNote{}
+		if err := QueryDbModelByPrimaryId(
+			currentLockerNote, noteId,
+		); err != nil {
+			utils.LogError("err = ", err)
+			lockerNote = nil
+		} else {
+			lockerNote = currentLockerNote
+		}
+	}
+	if lockerNote == nil {
+		utils.LogError("create new lockernote")
+		lockerNote = &models.LockerNote{OwnerID: user.ID}
+	}
 
-// 		// noteId should be found, save a version record
-// 		noteVersion := models.LockerNoteVersion{
-// 			Title:   note.Title,
-// 			Content: note.Content,
-// 			NoteID:  note.ID,
-// 		}
-// 		if err := SaveDbModel(&noteVersion); err != nil {
-// 			return nil, err
-// 		}
+	if lockerNote.OwnerID != user.ID {
+		return nil, errors.ApiErrorPermissionDenied
+	}
 
-// 		note.Title = title
-// 		note.Content = content
-// 		if err := SaveDbModel(&note); err != nil {
-// 			return nil, err
-// 		}
-// 	}
-// }
+	lockerNote.Title = title
+	lockerNote.Content = content
+	if noteId > 0 {
+		lockerNote.ID = noteId
+	}
+
+	if err := SaveDbModel(lockerNote); err != nil {
+		return nil, err
+	}
+
+	if err := LockerNoteRepoIns.SyncInviteeIds(
+		lockerNote, newInviteeIds,
+	); err != nil {
+		return nil, err
+	}
+
+	return lockerNote, nil
+}
 
 func (rp *lockerNoteRepo) SyncInviteeIds(
-	lockerNote *models.LockerNote, newInviteeIds *[]int64,
+	lockerNote *models.LockerNote, newInviteeIds *[]uint64,
 ) error {
 	db := rp.mainDBCon
 
 	// Update invitees
-	currentInviteeIds := []int64{}
+	currentInviteeIds := []uint64{}
 	db.Model(&models.LockerNoteInvitee{}).
 		Where("note_id = ?", lockerNote.ID).
 		Pluck("invitee_id", &currentInviteeIds)
@@ -117,7 +110,7 @@ func (rp *lockerNoteRepo) SyncInviteeIds(
 		}
 	}
 	if len(*insertInviteeIds) > 0 {
-		invitees := make([]models.LockerNoteInvitee, 0)
+		invitees := []models.LockerNoteInvitee{}
 		for _, item := range *insertInviteeIds {
 			invitees = append(invitees, models.LockerNoteInvitee{NoteID: lockerNote.ID, InviteeID: item})
 		}
@@ -130,7 +123,7 @@ func (rp *lockerNoteRepo) SyncInviteeIds(
 }
 
 func (rp *lockerNoteRepo) DeleteNote(
-	userId int64, noteId int64,
+	userId, noteId uint64,
 ) error {
 	db := rp.mainDBCon
 
@@ -143,6 +136,7 @@ func (rp *lockerNoteRepo) DeleteNote(
 				ID: noteId,
 			},
 		},
-		OwnerID: userId}
+		OwnerID: userId,
+	}
 	return db.Delete(&note).Error
 }

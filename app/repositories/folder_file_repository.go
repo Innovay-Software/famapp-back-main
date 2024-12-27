@@ -19,18 +19,18 @@ const (
 	pageSizeForNewerRecords = 30
 )
 
-func (rp *folderRepo) CountFilesForTargetUnixTimestamp(timestamp int64) int64 {
+func (rp *folderRepo) CountFilesForTargetUnixTimestamp(timestamp int64) uint64 {
 	db := rp.readDBCon
 	fromDateTime := time.Unix(timestamp, 0)
 	toDateTime := time.Unix(timestamp+1, 0)
 	fileCount := int64(0)
 	db.Model(&models.FolderFile{}).
-		Where("shot_at >= ?", fromDateTime).
-		Where("shot_at < ?", toDateTime).
+		Where("taken_on >= ?", fromDateTime).
+		Where("taken_on < ?", toDateTime).
 		Count(&fileCount)
 
 	if fileCount < 999999 {
-		return fileCount
+		return uint64(fileCount)
 	}
 
 	// if there are more than 1 mil files at target timestamp, increase timestamp by 1 second
@@ -47,7 +47,7 @@ func (rp *folderRepo) CreateFolderFile(
 
 // Delete folder file record
 func (rp *folderRepo) DeleteFolderFile(
-	user *models.User, folderFileId int64,
+	user *models.User, folderFileId uint64,
 ) error {
 	folderFileIdString := strconv.Itoa(int(folderFileId))
 	folderFile, err := rp.GetFolderFileByFieldName(user, "id", folderFileIdString)
@@ -59,9 +59,9 @@ func (rp *folderRepo) DeleteFolderFile(
 }
 
 func (rp *folderRepo) SaveFolderFileModel(folderFile *models.FolderFile) error {
-	if shotAtDateTime, exists := folderFile.Metadata["shot_at_date_time"]; exists {
-		utils.Log("SHotAtDateTime type=", reflect.TypeOf(shotAtDateTime))
-		// if shotAtDateTime, ok := shotAtDateTime.(time.Time); ok {
+	if takenOnDateTime, exists := folderFile.Metadata["taken_on_date_time"]; exists {
+		utils.Log("TakenOnDateTime type=", reflect.TypeOf(takenOnDateTime))
+		// if takenOnDateTime, ok := takenOnDateTime.(time.Time); ok {
 
 		// }
 	}
@@ -70,7 +70,7 @@ func (rp *folderRepo) SaveFolderFileModel(folderFile *models.FolderFile) error {
 
 // Update folder file
 func (rp *folderRepo) UpdateFolderFile(
-	user *models.User, folderFileId, newFolderId int64, remark string, isPrivate bool,
+	user *models.User, folderFileId, newFolderId uint64, remark string, isPrivate bool,
 ) (
 	*models.FolderFile, error,
 ) {
@@ -94,7 +94,7 @@ func (rp *folderRepo) UpdateFolderFile(
 	folderFile.Remark = remark
 	folderFile.IsPrivate = isPrivate
 	if newFolderId >= 0 {
-		folderFile.FolderID = newFolderId
+		folderFile.FolderID = uint64(newFolderId)
 	}
 	saveToDbErr := SaveDbModel(folderFile)
 	return folderFile, saveToDbErr
@@ -127,7 +127,7 @@ func (rp *folderRepo) GetFolderFileByFieldName(
 
 // Query for folder files with target MD5 value
 func (rp *folderRepo) GetActiveFolderFileWithMd5(
-	folderId int64, md5Value string,
+	folderId uint64, md5Value string,
 ) (
 	*models.FolderFile, error,
 ) {
@@ -151,7 +151,7 @@ func (rp *folderRepo) GetActiveFolderFileWithMd5(
 
 // Get latest
 func (rp *folderRepo) GetLatestFolderFileForDateTimeSecond(
-	folderId int64, targetDatetime time.Time,
+	folderId uint64, targetDatetime time.Time,
 ) (
 	*models.FolderFile, error,
 ) {
@@ -164,8 +164,8 @@ func (rp *folderRepo) GetLatestFolderFileForDateTimeSecond(
 	timeString := targetDatetime.Format(time.DateTime)
 
 	if err := db.Where("folder_id", folderId).
-		Where("shot_at like ", timeString+"%").
-		Order("shot_at desc").
+		Where("taken_on like ", timeString+"%").
+		Order("taken_on desc").
 		First(&folderFile).Error; err != nil {
 		return nil, err
 	}
@@ -174,8 +174,8 @@ func (rp *folderRepo) GetLatestFolderFileForDateTimeSecond(
 }
 
 // Get past records before a certain point
-func (rp *folderRepo) GetFolderFilesBeforeShotAt(
-	user *models.User, folderId int64, pivotDate string, beforeMicroTimestamp int64,
+func (rp *folderRepo) GetFolderFilesBeforeTakenOn(
+	user *models.User, folderId uint64, pivotDate string, beforeMicroTimestamp int64,
 ) (
 	*[]models.FolderFile, *models.Folder, bool, error,
 ) {
@@ -194,8 +194,8 @@ func (rp *folderRepo) GetFolderFilesBeforeShotAt(
 }
 
 // Get newer records after a certain point
-func (rp *folderRepo) GetFolderFilesAfterShotAt(
-	user *models.User, folderId int64, pivotDate string, afterMicroTimestamp int64,
+func (rp *folderRepo) GetFolderFilesAfterTakenOn(
+	user *models.User, folderId uint64, pivotDate string, afterMicroTimestamp int64,
 ) (
 	*[]models.FolderFile, *models.Folder, bool, error,
 ) {
@@ -216,8 +216,8 @@ func (rp *folderRepo) GetFolderFilesAfterShotAt(
 
 // Returns a slice of files and has more bool
 func (rp *folderRepo) getFolderFiles(
-	user *models.User, folder *models.Folder, pageSize int64,
-	sign, order, pivotDate string, pivotMicroTimestampShotAt int64,
+	user *models.User, folder *models.Folder, pageSize int,
+	sign, order, pivotDate string, pivotMicroTimestampTakenOn int64,
 ) (
 	*[]models.FolderFile, bool, error,
 ) {
@@ -232,12 +232,12 @@ func (rp *folderRepo) getFolderFiles(
 		}
 	}
 
-	var pivotShotAtTime *time.Time
-	if pivotMicroTimestampShotAt > 0 {
-		seconds := pivotMicroTimestampShotAt / 1000000
-		micro := pivotMicroTimestampShotAt % 1000000
+	var pivotTakenOnTime *time.Time
+	if pivotMicroTimestampTakenOn > 0 {
+		seconds := pivotMicroTimestampTakenOn / 1000000
+		micro := pivotMicroTimestampTakenOn % 1000000
 		t := time.Unix(seconds, micro*1000)
-		pivotShotAtTime = &t
+		pivotTakenOnTime = &t
 	}
 
 	var folderFiles []models.FolderFile
@@ -252,28 +252,28 @@ func (rp *folderRepo) getFolderFiles(
 		}
 	}
 
-	query := db.Limit(int(pageSize)).
+	query := db.Limit(pageSize).
 		Model(&models.FolderFile{}).
 		Where("folder_id = ?", folder.ID).
 		Where("file_type in ?", []string{"image", "video"})
 
-	if pivotMicroTimestampShotAt > 0 {
-		query = query.Where("shot_at "+sign+" ?", *pivotShotAtTime)
+	if pivotMicroTimestampTakenOn > 0 {
+		query = query.Where("taken_on "+sign+" ?", *pivotTakenOnTime)
 	}
 	if pivotDate != "" {
 		date, err := time.Parse("2006-01-02", pivotDate)
 		if err == nil {
 			date = date.AddDate(0, 0, 1)
-			query = query.Where("shot_at "+sign+"= ?", date)
+			query = query.Where("taken_on "+sign+"= ?", date)
 		}
 	}
-	query.Order("shot_at " + order).Find(&folderFiles)
+	query.Order("taken_on " + order).Find(&folderFiles)
 
 	if sign == ">=" && len(folderFiles) > 0 {
 		utils.ReverseSliceInPlace(&folderFiles)
 	}
 
-	hasMore := len(folderFiles) >= int(pageSize)
+	hasMore := len(folderFiles) >= pageSize
 	filteredFolderFiles := filterOutFolderFilesWithoutViewPermission(user, folder, &folderFiles)
 	folderFiles = *filteredFolderFiles
 
@@ -296,7 +296,9 @@ func filterOutFolderFilesWithoutViewPermission(
 	return &filteredFiles
 }
 
-func (rp *folderRepo) MoveFolderFiles(user *models.User, folderFileIds *[]int64, newFolderId int64, processLimit int) error {
+func (rp *folderRepo) MoveFolderFiles(
+	user *models.User, folderFileIds *[]uint64, newFolderId uint64, processLimit int,
+) error {
 	if folderFileIds == nil || len(*folderFileIds) == 0 {
 		return fmt.Errorf("missing folder file ids")
 	}
@@ -316,14 +318,14 @@ func (rp *folderRepo) MoveFolderFiles(user *models.User, folderFileIds *[]int64,
 			return err
 		}
 
-		filteredFolderIds := []int64{}
-		folderIdMap := map[int64][]int64{}
+		filteredFolderIds := []uint64{}
+		folderIdMap := map[uint64][]uint64{}
 		for _, ff := range folderFiles {
 			if ff.OwnerID == user.ID {
 				filteredFolderIds = append(filteredFolderIds, ff.ID)
 			} else {
 				if folderIdMap[ff.FolderID] == nil {
-					folderIdMap[ff.FolderID] = []int64{}
+					folderIdMap[ff.FolderID] = []uint64{}
 				}
 				folderIdMap[ff.FolderID] = append(
 					folderIdMap[ff.FolderID],
@@ -332,7 +334,7 @@ func (rp *folderRepo) MoveFolderFiles(user *models.User, folderFileIds *[]int64,
 			}
 		}
 
-		folderIds := []int64{}
+		folderIds := []uint64{}
 		for k := range folderIdMap {
 			folderIds = append(folderIds, k)
 		}
@@ -355,7 +357,7 @@ func (rp *folderRepo) MoveFolderFiles(user *models.User, folderFileIds *[]int64,
 }
 
 func (rp *folderRepo) RescheduleFolderFiles(
-	user *models.User, folderFileIds *[]int64, newTimestampInSeconds int64, processLimit int,
+	user *models.User, folderFileIds *[]uint64, newTimestampInSeconds int64, processLimit int,
 ) error {
 	if folderFileIds == nil || len(*folderFileIds) == 0 {
 		return fmt.Errorf("missing folder file ids")
@@ -370,14 +372,14 @@ func (rp *folderRepo) RescheduleFolderFiles(
 		return err
 	}
 
-	deniedFolderFileIds := []int64{}
+	deniedFolderFileIds := []uint64{}
 	if !user.IsAdmin() {
 		// Check the owners of the candidate folder files
-		folderIdMap := map[int64][]int64{}
+		folderIdMap := map[uint64][]uint64{}
 		for _, ff := range folderFiles {
 			if ff.OwnerID != user.ID {
 				if folderIdMap[ff.FolderID] == nil {
-					folderIdMap[ff.FolderID] = []int64{}
+					folderIdMap[ff.FolderID] = []uint64{}
 				}
 				folderIdMap[ff.FolderID] = append(
 					folderIdMap[ff.FolderID],
@@ -386,7 +388,7 @@ func (rp *folderRepo) RescheduleFolderFiles(
 			}
 		}
 
-		folderIds := []int64{}
+		folderIds := []uint64{}
 		for k := range folderIdMap {
 			folderIds = append(folderIds, k)
 		}
@@ -412,19 +414,19 @@ func (rp *folderRepo) RescheduleFolderFiles(
 	targetMilliSecond := 1
 	var latestFolderFile models.FolderFile
 	if err := db.Model(&models.FolderFile{}).
-		Where("shot_at >= ?", secondWindowStart).
-		Where("shot_at < ?", secondWindowEnd).
-		Order("shot_at desc").
+		Where("taken_on >= ?", secondWindowStart).
+		Where("taken_on < ?", secondWindowEnd).
+		Order("taken_on desc").
 		First(&latestFolderFile).Error; err != nil {
 
-		targetMilliSecond = latestFolderFile.ShotAt.Nanosecond() / 1000
+		targetMilliSecond = latestFolderFile.TakenOn.Nanosecond() / 1000
 	}
 
 	for _, ff := range folderFiles {
 		if slices.Contains(deniedFolderFileIds, ff.ID) {
 			continue
 		}
-		ff.ShotAt = time.Unix(newTimestampInSeconds, int64(targetMilliSecond)*1000)
+		ff.TakenOn = time.Unix(newTimestampInSeconds, int64(targetMilliSecond)*1000)
 		SaveDbModel(&ff)
 		targetMilliSecond++
 	}

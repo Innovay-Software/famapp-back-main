@@ -26,18 +26,19 @@ func Base64ChunkUploadFileHandler(
 	dto.ApiResponse, error,
 ) {
 
+	// Decode base64 encoded content
 	byteList, err := base64.StdEncoding.DecodeString(base64Content)
 	if err != nil {
 		return nil, errors.ApiErrorParamInvalid
 	}
 
+	// Generate chunked filename if not available
 	ext := filepath.Ext(fileName)
 	if chunkedFileName == "" {
 		chunkedFileName = fileName + "-" + utils.GenerateRandomString(10, true, false, false) + ext
 	}
 
 	chunkFileAbsPath := utils.GetStorageAbsPath("chunk-upload", chunkedFileName)
-
 	f, err := os.OpenFile(chunkFileAbsPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return nil, errors.ApiErrorSystem
@@ -58,16 +59,28 @@ func Base64ChunkUploadFileHandler(
 		}, nil
 	}
 
+	return processUploadedFile(user, chunkFileAbsPath, ext)
+}
+
+func processUploadedFile(
+	user *models.User, chunkFileAbsPath, ext string,
+) (
+	dto.ApiResponse, error,
+) {
+	utils.LogSuccess("processUploadedFile:", chunkFileAbsPath)
+	chunkFileAbsPathComponents := strings.Split(chunkFileAbsPath, "/")
+	chunkedFileName := chunkFileAbsPathComponents[len(chunkFileAbsPathComponents)-1]
+
 	metadataMap := services.ExtractFileMetadata(chunkFileAbsPath)
-	targetDatetime := (*metadataMap)["shot_at_date_time"].(time.Time)
+	targetDatetime := (*metadataMap)["taken_on_date_time"].(time.Time)
+	utils.LogSuccess("haha", targetDatetime)
 
 	relativeDirPath := strings.Join([]string{
-		strconv.FormatInt(user.ID, 10),
+		strconv.FormatInt(int64(user.ID), 10),
 		strings.ReplaceAll(targetDatetime.Format(time.DateOnly), "-", "/"),
 	}, "/")
 	fileNamePostFix := strconv.Itoa(rand.Intn(8888) + 1001)
-	// fmt.Println("fileNamePostFix = ", fileNamePostFix)
-	fileName = strings.ReplaceAll(targetDatetime.Format(time.DateOnly), "-", "_") + "_" + fileNamePostFix + ext
+	fileName := strings.ReplaceAll(targetDatetime.Format(time.DateOnly), "-", "_") + "_" + fileNamePostFix + ext
 	relativeFilePath := relativeDirPath + "/" + fileName
 
 	uploadDisk := "user-upload"
@@ -77,19 +90,22 @@ func Base64ChunkUploadFileHandler(
 	}
 
 	absFilePath := absDirPath + "/" + fileName
-	os.Rename(chunkFileAbsPath, absFilePath)
+	if err := os.Rename(chunkFileAbsPath, absFilePath); err != nil {
+		return nil, fmt.Errorf("unable to rename file from %s to %s", chunkFileAbsPath, absFilePath)
+	}
 
-	fmt.Println("absFilePath", absFilePath)
 	uploadIns := models.Upload{
 		UserID:   user.ID,
 		Disk:     uploadDisk,
 		FileName: fileName,
 		FileType: utils.FileExtToFileType(ext),
 		FilePath: relativeFilePath,
-		ShotAt:   targetDatetime.UTC(),
+		TakenOn:  targetDatetime.UTC(),
 	}
 
-	repositories.SaveDbModel(&uploadIns)
+	if err := repositories.SaveDbModel(&uploadIns); err != nil {
+		return nil, fmt.Errorf("unable to save uploadIns")
+	}
 
 	return &dto.Base64ChunkUploadFileResponse{
 		RemoteFileId:    uploadIns.ID,

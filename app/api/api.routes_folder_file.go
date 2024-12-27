@@ -8,6 +8,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	folderFileHandlers "github.com/innovay-software/famapp-main/app/handlers/folderFile"
+	"github.com/innovay-software/famapp-main/app/utils"
 )
 
 // Delete FolderFiles
@@ -28,9 +29,10 @@ func (s *ApiServerInterfaceImpl) FolderFileDeleteFolderFilesPath(
 		return
 	}
 
+	folderFileIds := utils.Int64SliceToUint64(&(req.FolderFileIds))
 	// Handle request
 	res, err := folderFileHandlers.DeleteFolderFilesHandler(
-		c, user, folderId, req.FolderFileIds,
+		c, user, uint64(folderId), *folderFileIds,
 	)
 	handleApiResponse(c, res, err)
 }
@@ -53,9 +55,12 @@ func (s *ApiServerInterfaceImpl) FolderFileUpdateMultipleFolderFilesPath(
 		return
 	}
 
+	folderFileIds := utils.Int64SliceToUint64(&(req.FolderFileIds))
+	newFolderId := utils.Int64PointerToUint64Pointer(req.NewFolderId)
+
 	// Handle request
 	res, err := folderFileHandlers.UpdateMultipleFolderFilesHandler(
-		c, user, req.FolderFileIds, req.NewFolderId, req.NewShotAtTimestamp,
+		c, user, *folderFileIds, newFolderId, req.NewTakenOnTimestamp,
 	)
 	handleApiResponse(c, res, err)
 }
@@ -80,15 +85,15 @@ func (s *ApiServerInterfaceImpl) FolderFileUpdateSingleFolderFilePath(
 
 	// Handle request
 	res, err := folderFileHandlers.UpdateSingleFolderFileHandler(
-		c, user, req.FolderFileId, req.IsPrivate, req.Remark,
+		c, user, uint64(req.FolderFileId), req.IsPrivate, req.Remark,
 	)
 	handleApiResponse(c, res, err)
 }
 
 // Ger FolderFiles after target datetime
-func (s *ApiServerInterfaceImpl) FolderFileGetFolderFilesAfterMicroTimestampShotAt(
+func (s *ApiServerInterfaceImpl) FolderFileGetFolderFilesAfterMicroTimestampTakenOn(
 	c *gin.Context, folderId int64, pivotDate string, microtimestamp int64,
-	params FolderFileGetFolderFilesAfterMicroTimestampShotAtParams,
+	params FolderFileGetFolderFilesAfterMicroTimestampTakenOnParams,
 ) {
 	// Authenticate caller
 	user, err := getAuthenticatedUser(c)
@@ -101,16 +106,16 @@ func (s *ApiServerInterfaceImpl) FolderFileGetFolderFilesAfterMicroTimestampShot
 	// pass - no request body
 
 	// Handle request
-	res, err := folderFileHandlers.GetFolderFilesAfterShotAtHandler(
-		c, user, folderId, pivotDate, microtimestamp,
+	res, err := folderFileHandlers.GetFolderFilesAfterTakenOnHandler(
+		c, user, uint64(folderId), pivotDate, microtimestamp,
 	)
 	handleApiResponse(c, res, err)
 }
 
 // Get FolderFiles before target datetime
-func (s *ApiServerInterfaceImpl) FolderFileGetFolderFilesBeforeMicroTimestampShotAt(
+func (s *ApiServerInterfaceImpl) FolderFileGetFolderFilesBeforeMicroTimestampTakenOn(
 	c *gin.Context, folderId int64, pivotDate string, microtimestamp int64,
-	params FolderFileGetFolderFilesBeforeMicroTimestampShotAtParams,
+	params FolderFileGetFolderFilesBeforeMicroTimestampTakenOnParams,
 ) {
 	// Authenticate caller
 	user, err := getAuthenticatedUser(c)
@@ -123,8 +128,8 @@ func (s *ApiServerInterfaceImpl) FolderFileGetFolderFilesBeforeMicroTimestampSho
 	// pass - no request body
 
 	// Handle request
-	res, err := folderFileHandlers.GetFolderFilesBeforeShotAtHandler(
-		c, user, folderId, pivotDate, microtimestamp,
+	res, err := folderFileHandlers.GetFolderFilesBeforeTakenOnHandler(
+		c, user, uint64(folderId), pivotDate, microtimestamp,
 	)
 	handleApiResponse(c, res, err)
 }
@@ -145,7 +150,7 @@ func (s *ApiServerInterfaceImpl) FolderFileDeleteFolderPath(
 
 	// Handle request
 	res, err := folderFileHandlers.DeleteFolderHandler(
-		c, user, folderId,
+		c, user, uint64(folderId),
 	)
 	handleApiResponse(c, res, err)
 }
@@ -168,10 +173,12 @@ func (s *ApiServerInterfaceImpl) FolderFileSaveFolderPath(
 		return
 	}
 
+	inviteeIds := utils.Int64SliceToUint64(&req.InviteeIds)
+
 	// Handle request
 	res, err := folderFileHandlers.SaveFolderHandler(
-		c, user, folderId, req.OwnerId, req.ParentId, req.Title, req.Cover,
-		req.Type, req.IsDefault, req.IsPrivate, &req.Metadata, &req.InviteeIds,
+		c, user, uint64(folderId), uint64(req.OwnerId), uint64(req.ParentId), req.Title, req.Cover,
+		req.Type, req.IsDefault, req.IsPrivate, &req.Metadata, inviteeIds,
 	)
 	handleApiResponse(c, res, err)
 }
@@ -192,7 +199,7 @@ func (s *ApiServerInterfaceImpl) FolderFileDisplayOriginalPath(
 
 	// Handle request
 	filepath, err := folderFileHandlers.DisplayFolderFileOriginalHandler(
-		c, user, folderFileId,
+		c, user, uint64(folderFileId),
 	)
 	handleFileResponse(c, filepath, err)
 }
@@ -211,7 +218,7 @@ func (s *ApiServerInterfaceImpl) FolderFileDisplayPath(c *gin.Context, folderFil
 
 	// Handle request
 	filepath, err := folderFileHandlers.DisplayFolderFileCompressedHandler(
-		c, user, folderFileId,
+		c, user, uint64(folderFileId),
 	)
 	handleFileResponse(c, filepath, err)
 }
@@ -230,7 +237,7 @@ func (s *ApiServerInterfaceImpl) FolderFileDisplayThumbnailPath(c *gin.Context, 
 
 	// Handle request
 	filepath, err := folderFileHandlers.DisplayFolderFileOriginalHandler(
-		c, user, folderFileId,
+		c, user, uint64(folderFileId),
 	)
 	handleFileResponse(c, filepath, err)
 }

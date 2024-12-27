@@ -1,6 +1,9 @@
 package user
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+
 	"github.com/innovay-software/famapp-main/app/dto"
 	apiErrors "github.com/innovay-software/famapp-main/app/errors"
 	"github.com/innovay-software/famapp-main/app/models"
@@ -26,14 +29,18 @@ func UpdateUserProfile(
 		user.Name = *name
 	}
 	if password != nil {
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(*password), bcrypt.DefaultCost)
+		hashedPassword, err := bcrypt.GenerateFromPassword(
+			[]byte(*password), bcrypt.DefaultCost,
+		)
 		if err != nil {
 			return nil, apiErrors.ApiErrorSystem
 		}
 		user.Password = string(hashedPassword)
 	}
 	if lockerPasscode != nil {
-		user.LockerPasscode = *lockerPasscode
+		h := md5.New()
+		h.Write([]byte(*lockerPasscode))
+		user.LockerPasscode = hex.EncodeToString(h.Sum(nil))
 	}
 	if avatarUrl != nil {
 		user.SetAvatarUrl(*avatarUrl)

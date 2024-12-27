@@ -46,7 +46,7 @@ func adminAddMemberAPI(
 
 // Calling API Endpoint
 func adminUpdateMemberAPI(
-	r *gin.Engine, token string, userId int64, name, mobile, role string,
+	r *gin.Engine, token string, userId uint64, name, mobile, role string,
 	password, lockerPasscode *string,
 ) (
 	*dto.AdminSaveMemberResponse, error,

@@ -1,5 +1,5 @@
 post:
-  operationId: folderFileGetFolderFilesBeforeMicroTimestampShotAt
+  operationId: folderFileGetFolderFilesBeforeMicroTimestampTakenOn
   tags:
     - folderFile
   summary: Get folder files before date time
@@ -13,12 +13,6 @@ post:
       schema:
         type: integer
         format: int64
-    - name: microTimestamp
-      in: path
-      required: true
-      schema:
-        type: integer
-        format: int64
     - name: pivotDate
       description: in "2020-01-21" format or "-" to indicate current date
       example: "2020-01-21"
@@ -26,6 +20,14 @@ post:
       required: true
       schema:
         type: string
+    - name: microTimestamp
+      description: In unix timestamp format with 6 decimal points (microseconds) precision for seconds, or "-"
+      example: "1723122861000001"
+      in: path
+      required: true
+      schema:
+        type: integer
+        format: int64
   allOf:
     - $ref: "../../response/commonErrorResponses.yaml"
     - responses:

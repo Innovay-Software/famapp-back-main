@@ -56,9 +56,9 @@ func workflow2A_Test(t *testing.T, r *gin.Engine) {
 	}
 
 	// Create a new note - expects success
-	noteId := int64(0)
+	noteId := uint64(0)
 	{
-		res3, err3 := createLockerNotes(r, user1Token, "Title1", "Content1", []int64{})
+		res3, err3 := createLockerNotes(r, user1Token, "Title1", "Content1", []uint64{})
 		tests.AssertNil(t, err3)
 		tests.AssertNotNil(t, res3.Note)
 		tests.AssertEqual(t, res3.Note.Title, "Title1")
@@ -67,7 +67,7 @@ func workflow2A_Test(t *testing.T, r *gin.Engine) {
 
 	// Update note - expects success
 	{
-		res4, err4 := saveLockerNotes(r, user1Token, noteId, "Title2", "", []int64{})
+		res4, err4 := saveLockerNotes(r, user1Token, noteId, "Title2", "", []uint64{})
 		tests.AssertNil(t, err4)
 		tests.AssertNotNil(t, res4.Note)
 		tests.AssertEqual(t, res4.Note.Title, "Title2")
@@ -122,7 +122,7 @@ func workflow2B_Test(t *testing.T, r *gin.Engine) {
 	}
 
 	// Create user2
-	user2Id := int64(0)
+	user2Id := uint64(0)
 	user2Token := ""
 	{
 		res2, err2 := createUser(r, "User2", "1234562", "member")
@@ -141,12 +141,12 @@ func workflow2B_Test(t *testing.T, r *gin.Engine) {
 
 	// User1 add a note and share to user2, user2 should be able to see, but unable to modify
 	{
-		_, err3 := createLockerNotes(r, user1Token, "Note1", "Content1", []int64{user2Id})
+		_, err3 := createLockerNotes(r, user1Token, "Note1", "Content1", []uint64{user2Id})
 		tests.AssertNil(t, err3)
 	}
 
 	// User2 should be able to see the record
-	noteId := int64(0)
+	noteId := uint64(0)
 	{
 		res4, err4 := listLockerNotes(r, user2Token)
 		tests.AssertNil(t, err4)
@@ -157,13 +157,13 @@ func workflow2B_Test(t *testing.T, r *gin.Engine) {
 
 	// User2 should not be able to modify
 	{
-		_, err5 := saveLockerNotes(r, user2Token, noteId, "Note1Updated", "Content1Updated", []int64{user2Id})
+		_, err5 := saveLockerNotes(r, user2Token, noteId, "Note1Updated", "Content1Updated", []uint64{user2Id})
 		tests.AssertNotNil(t, err5)
 	}
 
 	// User1 should be able to modify, and remove user2's access
 	{
-		_, err6 := saveLockerNotes(r, user1Token, noteId, "Note1Updated", "Content1Updated", []int64{})
+		_, err6 := saveLockerNotes(r, user1Token, noteId, "Note1Updated123", "Content1Updated123", []uint64{})
 		tests.AssertNil(t, err6)
 	}
 

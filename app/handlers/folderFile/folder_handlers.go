@@ -11,15 +11,15 @@ import (
 )
 
 func SaveFolderHandler(
-	c *gin.Context, user *models.User, folderId, ownerId, parentId int64,
+	c *gin.Context, user *models.User, folderId, ownerId, parentId uint64,
 	title, cover, folderType string, isDefault, isPrivate bool, metadata *map[string]any,
-	inviteeIds *[]int64,
+	inviteeIds *[]uint64,
 ) (
 	dto.ApiResponse, error,
 ) {
 	var folder models.Folder
 	if err := repositories.QueryDbModelByPrimaryId(
-		&folder, folderId,
+		&folder, uint64(folderId),
 	); err != nil {
 		folder = models.Folder{OwnerID: user.ID}
 	}
@@ -28,8 +28,8 @@ func SaveFolderHandler(
 		return nil, errors.ApiErrorPermissionDenied
 	}
 
-	folder.OwnerID = ownerId
-	folder.ParentID = parentId
+	folder.OwnerID = uint64(ownerId)
+	folder.ParentID = uint64(parentId)
 	folder.Title = title
 	folder.Cover = cover
 	folder.Type = folderType
@@ -58,7 +58,7 @@ func SaveFolderHandler(
 }
 
 func DeleteFolderHandler(
-	c *gin.Context, user *models.User, folderId int64,
+	c *gin.Context, user *models.User, folderId uint64,
 ) (
 	dto.ApiResponse, error,
 ) {

@@ -31,7 +31,7 @@ func (s *ApiServerInterfaceImpl) AdminAddUserPath(
 	// Handle request
 	res, err := adminHandlers.AdminAddMember(
 		c, admin, req.Name, req.Mobile,
-		string(req.Role), req.Password, req.LockerPasscode, req.FamilyId,
+		string(req.Role), req.Password, req.LockerPasscode, uint64(req.FamilyId),
 	)
 	handleApiResponse(c, res, err)
 }
@@ -51,7 +51,7 @@ func (s *ApiServerInterfaceImpl) AdminListUsersPath(
 	// pass - no request body
 
 	// Handle request
-	res, err := adminHandlers.AdminGetMemberListHandler(c, admin, afterId)
+	res, err := adminHandlers.AdminGetMemberListHandler(c, admin, uint64(afterId))
 	handleApiResponse(c, res, err)
 }
 
@@ -93,9 +93,10 @@ func (s *ApiServerInterfaceImpl) AdminSaveUserPath(
 	}
 
 	// Handle request
+	familyId := uint64(*(req.FamilyId))
 	res, err := adminHandlers.AdminUpdateMember(
-		c, admin, userId, req.Name, req.Mobile,
-		string(req.Role), req.Password, req.LockerPasscode, req.FamilyId,
+		c, admin, uint64(userId), req.Name, req.Mobile,
+		string(req.Role), req.Password, req.LockerPasscode, &familyId,
 	)
 	handleApiResponse(c, res, err)
 }

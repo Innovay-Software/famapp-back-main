@@ -29,7 +29,7 @@ func FolderFileChunkUploadInitUploadIdHandler(
 		UserID:   user.ID,
 		Disk:     chunkUploadDisk,
 		FileType: "others",
-		ShotAt:   time.Now(),
+		TakenOn:  time.Now(),
 	}
 	if err := repositories.SaveDbModel(&uploadInstance); err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func FolderFileChunkUploadInitUploadIdHandler(
 }
 
 func FolderFileChunkUploadHandler(
-	c *gin.Context, user *models.User, folderId int64, uploadId string,
+	c *gin.Context, user *models.User, folderId uint64, uploadId string,
 	hasmore bool, filename string, chunkindex int,
 ) (
 	dto.ApiResponse, error,
@@ -103,7 +103,7 @@ func FolderFileChunkUploadHandler(
 	// else if no more chunks are expected, delete upload record and process the uploaded file
 	var uploadInstance models.Upload
 	if uploadIdInt, err := strconv.Atoi(uploadId); err == nil {
-		if err := repositories.QueryDbModelByPrimaryId(&uploadInstance, int64(uploadIdInt)); err == nil {
+		if err := repositories.QueryDbModelByPrimaryId(&uploadInstance, uint64(uploadIdInt)); err == nil {
 			repositories.DeleteDbModel(uploadInstance)
 		}
 	}
@@ -132,7 +132,7 @@ func processUploadedChunkFileAsFolderFile(
 	// Check if there are other files with same md5 value
 	if preventDuplicateFiles {
 		if _, err := repositories.FolderRepoIns.GetActiveFolderFileWithMd5(
-			int64(folder.ID), fileMd5,
+			folder.ID, fileMd5,
 		); err == nil {
 			utils.DeleteFile(chunkFileAbsPath)
 			return errors.ApiError{Code: -1, Message: "Duplicate File"}
@@ -143,13 +143,13 @@ func processUploadedChunkFileAsFolderFile(
 	ext := filepath.Ext(chunkFileAbsPath)
 	filetype := utils.FileExtToFileType(ext)
 	metadataMap := services.ExtractFileMetadata(chunkFileAbsPath)
-	targetDatetime := (*metadataMap)["shot_at_date_time"].(time.Time)
+	targetDatetime := (*metadataMap)["taken_on_date_time"].(time.Time)
 
 	// Update target date time micro seconds
 	targetUnixSecondTimestamp := targetDatetime.UTC().Unix()
 	fileCountAtTargetSecond := repositories.FolderRepoIns.CountFilesForTargetUnixTimestamp(targetUnixSecondTimestamp)
-	targetDatetime = time.Unix(targetUnixSecondTimestamp, (fileCountAtTargetSecond+1)*1000)
-	(*metadataMap)["shot_at_date_time"] = targetDatetime
+	targetDatetime = time.Unix(targetUnixSecondTimestamp, int64(fileCountAtTargetSecond+1)*1000)
+	(*metadataMap)["taken_on_date_time"] = targetDatetime
 
 	// Get save path
 	albumDisk := "album-general"
@@ -192,7 +192,7 @@ func processUploadedChunkFileAsFolderFile(
 
 		Remark:   "",
 		Metadata: *metadataMap,
-		ShotAt:   targetDatetime,
+		TakenOn:  targetDatetime,
 	}
 
 	if err := repositories.FolderRepoIns.CreateFolderFile(&folderFile); err != nil {

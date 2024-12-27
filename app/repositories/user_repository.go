@@ -13,7 +13,7 @@ type userRepo struct {
 	rd        *redisRepo
 }
 
-func (u userRepo) FindMemberList(limit int, afterId int64) (
+func (u userRepo) FindMemberList(limit int, afterId uint64) (
 	[]*models.UserMember, error,
 ) {
 	db := u.readDBCon

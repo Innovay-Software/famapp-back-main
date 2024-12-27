@@ -32,7 +32,7 @@ func Workflow3A_Test(t *testing.T, r *gin.Engine) {
 	resetDatabase()
 
 	// Login as admin
-	user1Id := int64(0)
+	user1Id := uint64(0)
 	user1Token := ""
 	adminToken := ""
 	{
@@ -59,11 +59,11 @@ func Workflow3A_Test(t *testing.T, r *gin.Engine) {
 	}
 
 	// Add folder
-	folderID := int64(0)
+	folderID := uint64(0)
 	{
 		res2, err2 := saveFolder(
 			r, user1Token, 0, user1Id, 0, "Test1", "", "normal",
-			false, false, &map[string]any{}, []int64{})
+			false, false, &map[string]any{}, []uint64{})
 		// folderID := (*res2.Folder).ID
 		tests.AssertNil(t, err2)
 		tests.AssertNotEqual(t, (*res2.Folder).ID, 0)
@@ -75,13 +75,13 @@ func Workflow3A_Test(t *testing.T, r *gin.Engine) {
 	{
 		res3, err3 := saveFolder(
 			r, user1Token, folderID, user1Id, 0, "Test2", "", "normal",
-			true, true, &map[string]any{}, []int64{})
+			true, true, &map[string]any{}, []uint64{})
 		tests.AssertNil(t, err3)
 		tests.AssertEqual(t, (*res3.Folder).Title, "Test2")
 	}
 
 	// Create User2
-	user2Id := int64(0)
+	user2Id := uint64(0)
 	user2Token := ""
 	{
 		res4, err4 := createUser(r, "User2", "1234562", "member")
@@ -102,7 +102,7 @@ func Workflow3A_Test(t *testing.T, r *gin.Engine) {
 	{
 		_, err4c := saveFolder(
 			r, user2Token, folderID, user1Id, 0, "Test2", "", "normal",
-			true, true, &map[string]any{}, []int64{user2Id})
+			true, true, &map[string]any{}, []uint64{user2Id})
 		tests.AssertNotNil(t, err4c)
 	}
 
@@ -110,7 +110,7 @@ func Workflow3A_Test(t *testing.T, r *gin.Engine) {
 	{
 		res5, err5 := saveFolder(
 			r, user1Token, folderID, user1Id, 0, "Test2", "", "normal",
-			true, true, &map[string]any{}, []int64{user2Id})
+			true, true, &map[string]any{}, []uint64{user2Id})
 		tests.AssertNil(t, err5)
 		tests.AssertEqual(t, (*res5.Folder).Title, "Test2")
 	}
@@ -120,14 +120,14 @@ func Workflow3A_Test(t *testing.T, r *gin.Engine) {
 	{
 		_, err5b := saveFolder(
 			r, user2Token, folderID, user1Id, 0, "Test2222", "", "normal",
-			true, true, &map[string]any{}, []int64{})
+			true, true, &map[string]any{}, []uint64{})
 		tests.AssertNotNil(t, err5b)
 	}
 
 	{
 		res6, err6 := saveFolder(
 			r, adminToken, folderID, user1Id, 0, "Test2222", "", "normal",
-			true, true, &map[string]any{}, []int64{})
+			true, true, &map[string]any{}, []uint64{})
 		tests.AssertNil(t, err6)
 		tests.AssertEqual(t, res6.Folder.Title, "Test2222")
 	}

@@ -28,12 +28,12 @@ func folderFileChunkUploadInitUploadIdAPI(
 
 // Calling API Endpoint
 func uploadFileToFolderFile(
-	gin *gin.Engine, accessToken string, folderID int64, filePath string,
+	gin *gin.Engine, accessToken string, folderID uint64, filePath string,
 ) (
 	*dto.FolderFileChunkUploadFileResponse, error,
 ) {
 
-	uploadId := int64(0)
+	uploadId := uint64(0)
 	{
 		res, err := folderFileChunkUploadInitUploadIdAPI(gin, accessToken)
 		if err != nil {
@@ -80,7 +80,7 @@ func uploadFileToFolderFile(
 
 // Calling API Endpoint
 func uploadRequest(
-	gin *gin.Engine, token string, folderID int64, uploadId int64,
+	gin *gin.Engine, token string, folderID uint64, uploadId uint64,
 	hasmore bool, filename string, chunkindex int, binaryContent []byte,
 ) (*dto.FolderFileChunkUploadFileResponse, error) {
 	var resModel dto.FolderFileChunkUploadFileResponse

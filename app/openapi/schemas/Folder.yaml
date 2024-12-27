@@ -10,8 +10,8 @@ required:
   - isDefault
   - isPrivate
   - totalFiles
-  - earliestShotAt
-  - latestShotAt
+  - earliestTakenOn
+  - latestTakenOn
 properties:
   id:
     type: integer
@@ -37,9 +37,9 @@ properties:
   totalFiles:
     type: integer
     format: int64
-  earliestShotAt:
+  earliestTakenOn:
     type: string
     format: date-time
-  latestShotAt:
+  latestTakenOn:
     type: string
     format: date-time

@@ -8,19 +8,19 @@ import (
 	"github.com/innovay-software/famapp-main/app/repositories"
 )
 
-func GetFolderFilesBeforeShotAtHandler(
-	c *gin.Context, user *models.User, folderId int64, pivotDate string, beforeMicroTimestamp int64,
+func GetFolderFilesBeforeTakenOnHandler(
+	c *gin.Context, user *models.User, folderId uint64, pivotDate string, beforeMicroTimestamp int64,
 ) (
 	dto.ApiResponse, error,
 ) {
-	folderFiles, folder, hasMore, err := repositories.FolderRepoIns.GetFolderFilesBeforeShotAt(
+	folderFiles, folder, hasMore, err := repositories.FolderRepoIns.GetFolderFilesBeforeTakenOn(
 		user, folderId, pivotDate, beforeMicroTimestamp,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	res := dto.GetFolderFilesBeforeShotAtResponse{
+	res := dto.GetFolderFilesBeforeTakenOnResponse{
 		FolderFiles: folderFiles,
 		Folder:      folder,
 		HasMore:     hasMore,
@@ -29,19 +29,19 @@ func GetFolderFilesBeforeShotAtHandler(
 	return &res, nil
 }
 
-func GetFolderFilesAfterShotAtHandler(
-	c *gin.Context, user *models.User, folderId int64, pivotDate string, afterMicroTimestamp int64,
+func GetFolderFilesAfterTakenOnHandler(
+	c *gin.Context, user *models.User, folderId uint64, pivotDate string, afterMicroTimestamp int64,
 ) (
 	dto.ApiResponse, error,
 ) {
-	folderFiles, folder, hasMore, err := repositories.FolderRepoIns.GetFolderFilesAfterShotAt(
+	folderFiles, folder, hasMore, err := repositories.FolderRepoIns.GetFolderFilesAfterTakenOn(
 		user, folderId, pivotDate, afterMicroTimestamp,
 	)
 	if err != nil {
 		return nil, err
 	}
 
-	res := dto.GetFolderFilesAfterShotAtResponse{
+	res := dto.GetFolderFilesAfterTakenOnResponse{
 		FolderFiles: folderFiles,
 		Folder:      folder,
 		HasMore:     hasMore,
@@ -51,7 +51,7 @@ func GetFolderFilesAfterShotAtHandler(
 }
 
 func UpdateSingleFolderFileHandler(
-	c *gin.Context, user *models.User, folderFileId int64, isPrivate *bool, remark *string,
+	c *gin.Context, user *models.User, folderFileId uint64, isPrivate *bool, remark *string,
 ) (
 	dto.ApiResponse, error,
 ) {
@@ -81,7 +81,7 @@ func UpdateSingleFolderFileHandler(
 }
 
 func UpdateMultipleFolderFilesHandler(
-	c *gin.Context, user *models.User, folderFileIds []int64, newFolderId *int64, newShotAtTimeStamp *int64,
+	c *gin.Context, user *models.User, folderFileIds []uint64, newFolderId *uint64, newTakenOnTimeStamp *int64,
 ) (
 	dto.ApiResponse, error,
 ) {
@@ -92,9 +92,9 @@ func UpdateMultipleFolderFilesHandler(
 			return nil, err
 		}
 	}
-	if newShotAtTimeStamp != nil {
+	if newTakenOnTimeStamp != nil {
 		// Set timestamp
-		err := repositories.FolderRepoIns.RescheduleFolderFiles(user, &folderFileIds, *newShotAtTimeStamp, 100)
+		err := repositories.FolderRepoIns.RescheduleFolderFiles(user, &folderFileIds, *newTakenOnTimeStamp, 100)
 		if err != nil {
 			return nil, err
 		}
@@ -104,12 +104,12 @@ func UpdateMultipleFolderFilesHandler(
 }
 
 func DeleteFolderFilesHandler(
-	c *gin.Context, user *models.User, folderId int64, folderFileIds []int64,
+	c *gin.Context, user *models.User, folderId uint64, folderFileIds []uint64,
 ) (
 	dto.ApiResponse, error,
 ) {
 
-	failedIds := []int64{}
+	failedIds := []uint64{}
 	// needs to delete each one individually to check for user permision
 	for _, item := range folderFileIds {
 		if err := repositories.FolderRepoIns.DeleteFolderFile(user, item); err != nil {

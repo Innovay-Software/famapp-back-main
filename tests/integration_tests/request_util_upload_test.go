@@ -58,10 +58,8 @@ func utilBase64ChunkUploadFileWrapper(
 		if chunkedFilename == "" {
 			chunkedFilename = res.ChunkedFileName
 		}
-		utils.LogWarning("hasMore?", res.HasMore)
+		// utils.LogWarning("hasMore?", res.HasMore)
 		if !res.HasMore {
-			utils.LogWarning(*(res.Document))
-			utils.LogWarning(res)
 			uploadedDisk = res.Document.Disk
 			uploadedFilepath = res.Document.FilePath
 			fileUrl = res.Document.FileUrl

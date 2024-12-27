@@ -3,7 +3,7 @@ package models
 type Traffic struct {
 	BaseDbModel
 	IP           string `gorm:"column:ip" json:"ip"`
-	UserID       int64  `gorm:"column:user_id" json:"userId"`
+	UserID       uint64 `gorm:"column:user_id" json:"userId"`
 	Requester    string `gorm:"column:requester" json:"requester"`
 	RequestURI   string `gorm:"column:request_uri" json:"requestUri"`
 	RequestBody  string `gorm:"column:request_body" json:"requestBody"`

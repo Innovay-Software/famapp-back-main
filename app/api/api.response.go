@@ -66,7 +66,7 @@ func apiResp(
 		utils.LogError("ApiResp error:", errCode, ", ", errMsg)
 	}
 	requester := ""
-	userId := int64(0)
+	userId := uint64(0)
 	if user, err := getAuthenticatedUser(c); err == nil {
 		userId = user.ID
 		requester = user.UUID.String()

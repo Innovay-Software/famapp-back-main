@@ -4,7 +4,7 @@ type LockerNote struct {
 	BaseModelSoftDelete
 	Title    string        `gorm:"column:title" json:"title"`
 	Content  string        `gorm:"column:content" json:"content"`
-	OwnerID  int64         `gorm:"column:owner_id" json:"ownerId"`
+	OwnerID  uint64        `gorm:"column:owner_id" json:"ownerId"`
 	Owner    *User         `gorm:"foreignKey:OwnerID" json:"owner"`
 	Invitees []*UserMember `gorm:"many2many:locker_note_invitees;foreignKey:ID;joinForeignKey:NoteID;References:ID;joinReferences:InviteeID" json:"invitees"`
 }
@@ -17,7 +17,7 @@ type LockerNoteVersion struct {
 	BaseDbModel
 	Title   string `gorm:"column:title" json:"title"`
 	Content string `gorm:"column:content" json:"content"`
-	NoteID  int64  `gorm:"column:note_id" json:"noteId"`
+	NoteID  uint64 `gorm:"column:note_id" json:"noteId"`
 }
 
 func (LockerNoteVersion) TableName() string {
@@ -26,8 +26,8 @@ func (LockerNoteVersion) TableName() string {
 
 type LockerNoteInvitee struct {
 	BaseDbModel
-	NoteID    int64 `gorm:"column:note_id" json:"noteId"`
-	InviteeID int64 `gorm:"column:invitee_id" json:"inviteeId"`
+	NoteID    uint64 `gorm:"column:note_id" json:"noteId"`
+	InviteeID uint64 `gorm:"column:invitee_id" json:"inviteeId"`
 }
 
 func (LockerNoteInvitee) TableName() string {

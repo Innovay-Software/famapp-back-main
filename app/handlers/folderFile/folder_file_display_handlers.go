@@ -21,7 +21,7 @@ const (
 
 // Display folderFile.FilePath image file
 func DisplayFolderFileCompressedHandler(
-	c *gin.Context, user *models.User, folderFileId int64,
+	c *gin.Context, user *models.User, folderFileId uint64,
 ) (
 	string, error,
 ) {
@@ -30,7 +30,7 @@ func DisplayFolderFileCompressedHandler(
 
 // Display folderFile.ThumbnailPath image file
 func DisplayFolderFileThumbnailHandler(
-	c *gin.Context, user *models.User, folderFileId int64,
+	c *gin.Context, user *models.User, folderFileId uint64,
 ) (
 	string, error,
 ) {
@@ -44,7 +44,7 @@ func DisplayFolderFileThumbnailHandler(
 
 // Display folderFile.Originalpath image file
 func DisplayFolderFileOriginalHandler(
-	c *gin.Context, user *models.User, folderFileId int64,
+	c *gin.Context, user *models.User, folderFileId uint64,
 ) (
 	string, error,
 ) {
@@ -57,7 +57,7 @@ func DisplayFolderFileOriginalHandler(
 }
 
 func getFolderFileDisplayFilepath(
-	c *gin.Context, target FolderFileMediaType, user *models.User, folderFileId int64,
+	c *gin.Context, target FolderFileMediaType, user *models.User, folderFileId uint64,
 ) (
 	string, error,
 ) {

@@ -27,40 +27,24 @@ func ListLockerNotesHandler(
 
 // Save a locker note
 func SaveLockerNoteHandler(
-	c *gin.Context, user *models.User, noteId int64, title, content string, inviteeIds *[]int64,
+	c *gin.Context, user *models.User, noteId uint64, title, content string, inviteeIds *[]uint64,
 ) (
 	dto.ApiResponse, error,
 ) {
-	var lockerNote models.LockerNote
-	if err := repositories.QueryDbModelByPrimaryId(
-		&lockerNote, noteId,
-	); err != nil {
-		lockerNote = models.LockerNote{OwnerID: user.ID}
-	}
-	if lockerNote.OwnerID != user.ID {
-		return nil, errors.ApiErrorPermissionDenied
-	}
 
-	lockerNote.Title = title
-	lockerNote.Content = content
-	lockerNote.ID = noteId
-
-	if err := repositories.SaveDbModel(&lockerNote); err != nil {
+	lockerNote, err := repositories.LockerNoteRepoIns.SaveNote(
+		user, noteId, title, content, inviteeIds,
+	)
+	if err != nil {
 		return nil, err
 	}
 
-	if err := repositories.LockerNoteRepoIns.SyncInviteeIds(
-		&lockerNote, inviteeIds,
-	); err != nil {
-		return nil, err
-	}
-
-	res := dto.SaveLockerNoteResponse{Note: &lockerNote}
+	res := dto.SaveLockerNoteResponse{Note: lockerNote}
 	return &res, nil
 }
 
 func DeleteLockerNoteHandler(
-	c *gin.Context, user *models.User, noteId int64,
+	c *gin.Context, user *models.User, noteId uint64,
 ) (
 	dto.ApiResponse, error,
 ) {

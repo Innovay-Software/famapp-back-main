@@ -8,6 +8,7 @@ post:
   parameters:
     - $ref: "../../headers/acceptLanguageHeader.yaml"
   requestBody:
+    required: true
     content:
       application/json:
         schema:

@@ -8,6 +8,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	lockerNoteHandlers "github.com/innovay-software/famapp-main/app/handlers/lockerNote"
+	"github.com/innovay-software/famapp-main/app/utils"
 )
 
 // List LockerNotes
@@ -43,7 +44,7 @@ func (s *ApiServerInterfaceImpl) LockerNoteDeletePath(c *gin.Context, noteId int
 
 	// Handle request
 	res, err := lockerNoteHandlers.DeleteLockerNoteHandler(
-		c, user, noteId,
+		c, user, uint64(noteId),
 	)
 	handleApiResponse(c, res, err)
 }
@@ -65,8 +66,9 @@ func (s *ApiServerInterfaceImpl) LockerNoteSavePath(c *gin.Context, noteId int64
 	}
 
 	// Handle request
+	inviteeIds := utils.Int64SliceToUint64(req.InviteeIds)
 	res, err := lockerNoteHandlers.SaveLockerNoteHandler(
-		c, user, noteId, req.Title, req.Content, req.InviteeIds,
+		c, user, uint64(noteId), req.Title, req.Content, inviteeIds,
 	)
 	handleApiResponse(c, res, err)
 }

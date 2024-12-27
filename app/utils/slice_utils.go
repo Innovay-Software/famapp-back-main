@@ -66,3 +66,19 @@ func ReverseSliceToNew[T any](slice *[]T) *[]T {
 	}
 	return &newSlice
 }
+
+func Int64SliceToUint64(slice *[]int64) *[]uint64 {
+	ans := []uint64{}
+	for _, item := range *slice {
+		ans = append(ans, uint64(item))
+	}
+	return &ans
+}
+
+func Uint64SliceToInt64(slice *[]uint64) *[]int64 {
+	ans := []int64{}
+	for _, item := range *slice {
+		ans = append(ans, int64(item))
+	}
+	return &ans
+}

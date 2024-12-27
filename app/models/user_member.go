@@ -8,7 +8,7 @@ import (
 )
 
 type UserMember struct {
-	ID     int64
+	ID     uint64
 	Role   string
 	Name   string
 	Mobile string
@@ -22,7 +22,7 @@ func (UserMember) TableName() string {
 func (u UserMember) MarshalJSON() ([]byte, error) {
 	// Define a temporary struct to hold the marshalled data
 	type UserMemberMarshal struct {
-		ID     int64  `json:"id"`
+		ID     uint64 `json:"id"`
 		Role   string `json:"role"`
 		Name   string `json:"name"`
 		Mobile string `json:"mobile"`

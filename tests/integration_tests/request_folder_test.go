@@ -9,9 +9,9 @@ import (
 
 // Calling API Endpoint
 func saveFolder(
-	gin *gin.Engine, token string, folderID, owerID, parentID int64,
+	gin *gin.Engine, token string, folderID, owerID, parentID uint64,
 	title, cover, folderType string,
-	isDefault, isPrivate bool, metadata *map[string]any, inviteeIDs []int64,
+	isDefault, isPrivate bool, metadata *map[string]any, inviteeIDs []uint64,
 ) (*dto.SaveFolderResponse, error) {
 	var resModel dto.SaveFolderResponse
 	if metadata == nil {
@@ -37,7 +37,7 @@ func saveFolder(
 
 // Calling API Endpoint
 func deleteFolder(
-	r *gin.Engine, token string, id int64,
+	r *gin.Engine, token string, id uint64,
 ) (*dto.DeleteFolderResponse, error) {
 	var resModel dto.DeleteFolderResponse
 	err := postRequest(

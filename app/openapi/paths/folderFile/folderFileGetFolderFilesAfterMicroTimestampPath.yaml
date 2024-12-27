@@ -1,5 +1,5 @@
 post:
-  operationId: folderFileGetFolderFilesAfterMicroTimestampShotAt
+  operationId: folderFileGetFolderFilesAfterMicroTimestampTakenOn
   tags:
     - folderFile
   summary: Get folder files after date time

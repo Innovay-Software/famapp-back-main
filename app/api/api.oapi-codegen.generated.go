@@ -143,23 +143,23 @@ type FolderFileDeleteFolderFilesPathParams struct {
 	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
-// FolderFileGetFolderFilesAfterMicroTimestampShotAtParams defines parameters for FolderFileGetFolderFilesAfterMicroTimestampShotAt.
-type FolderFileGetFolderFilesAfterMicroTimestampShotAtParams struct {
+// FolderFileGetFolderFilesAfterMicroTimestampTakenOnParams defines parameters for FolderFileGetFolderFilesAfterMicroTimestampTakenOn.
+type FolderFileGetFolderFilesAfterMicroTimestampTakenOnParams struct {
 	// AcceptLanguage Accepted language from client side
 	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
-// FolderFileGetFolderFilesBeforeMicroTimestampShotAtParams defines parameters for FolderFileGetFolderFilesBeforeMicroTimestampShotAt.
-type FolderFileGetFolderFilesBeforeMicroTimestampShotAtParams struct {
+// FolderFileGetFolderFilesBeforeMicroTimestampTakenOnParams defines parameters for FolderFileGetFolderFilesBeforeMicroTimestampTakenOn.
+type FolderFileGetFolderFilesBeforeMicroTimestampTakenOnParams struct {
 	// AcceptLanguage Accepted language from client side
 	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
 // FolderFileUpdateMultipleFolderFilesPathJSONBody defines parameters for FolderFileUpdateMultipleFolderFilesPath.
 type FolderFileUpdateMultipleFolderFilesPathJSONBody struct {
-	FolderFileIds      []int64 `json:"folderFileIds"`
-	NewFolderId        *int64  `json:"newFolderId,omitempty"`
-	NewShotAtTimestamp *int64  `json:"newShotAtTimestamp,omitempty"`
+	FolderFileIds       []int64 `json:"folderFileIds"`
+	NewFolderId         *int64  `json:"newFolderId,omitempty"`
+	NewTakenOnTimestamp *int64  `json:"newTakenOnTimestamp,omitempty"`
 }
 
 // FolderFileUpdateMultipleFolderFilesPathParams defines parameters for FolderFileUpdateMultipleFolderFilesPath.
@@ -233,11 +233,11 @@ type LockerNoteSavePathParams struct {
 
 // UserUpdateProfilePathJSONBody defines parameters for UserUpdateProfilePath.
 type UserUpdateProfilePathJSONBody struct {
-	AvatarUrl      *string `json:"avatarUrl,omitempty" validate:"omitempty"`
-	LockerPasscode *string `json:"lockerPasscode,omitempty" validate:"omitempty,min=6,max=6"`
-	Mobile         *string `json:"mobile,omitempty" validate:"omitempty,min=4,max=20"`
-	Name           *string `json:"name,omitempty" validate:"omitempty,min=1,max=40"`
-	Password       *string `json:"password,omitempty" validate:"omitempty,min=6,max=50"`
+	AvatarUrl      *string `json:"avatarUrl" validate:"omitempty,min=1"`
+	LockerPasscode *string `json:"lockerPasscode" validate:"omitempty,min=6,max=6"`
+	Mobile         *string `json:"mobile" validate:"omitempty,min=4,max=20"`
+	Name           *string `json:"name" validate:"omitempty,min=1,max=40"`
+	Password       *string `json:"password" validate:"omitempty,min=6,max=50"`
 }
 
 // UserUpdateProfilePathParams defines parameters for UserUpdateProfilePath.
@@ -260,8 +260,8 @@ type UtilBase64ChunkUploadPathParams struct {
 	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
 
-// UtilCheckForUpdatePathParams defines parameters for UtilCheckForUpdatePath.
-type UtilCheckForUpdatePathParams struct {
+// UtilCheckForMobileUpdatePathParams defines parameters for UtilCheckForMobileUpdatePath.
+type UtilCheckForMobileUpdatePathParams struct {
 	// AcceptLanguage Accepted language from client side
 	AcceptLanguage *string `json:"Accept-Language,omitempty"`
 }
@@ -357,10 +357,10 @@ type ServerInterface interface {
 	FolderFileDeleteFolderFilesPath(c *gin.Context, folderId int64, params FolderFileDeleteFolderFilesPathParams)
 	// Get folder files after date time
 	// (POST /api/v2/folder-files/get-folder-files-after-micro-timestamp/{folderId}/{pivotDate}/{microTimestamp})
-	FolderFileGetFolderFilesAfterMicroTimestampShotAt(c *gin.Context, folderId int64, pivotDate string, microTimestamp int64, params FolderFileGetFolderFilesAfterMicroTimestampShotAtParams)
+	FolderFileGetFolderFilesAfterMicroTimestampTakenOn(c *gin.Context, folderId int64, pivotDate string, microTimestamp int64, params FolderFileGetFolderFilesAfterMicroTimestampTakenOnParams)
 	// Get folder files before date time
 	// (POST /api/v2/folder-files/get-folder-files-before-micro-timestamp/{folderId}/{pivotDate}/{microTimestamp})
-	FolderFileGetFolderFilesBeforeMicroTimestampShotAt(c *gin.Context, folderId int64, pivotDate string, microTimestamp int64, params FolderFileGetFolderFilesBeforeMicroTimestampShotAtParams)
+	FolderFileGetFolderFilesBeforeMicroTimestampTakenOn(c *gin.Context, folderId int64, pivotDate string, microTimestamp int64, params FolderFileGetFolderFilesBeforeMicroTimestampTakenOnParams)
 	// Update multiple folder files
 	// (POST /api/v2/folder-files/update-multiple-folder-files)
 	FolderFileUpdateMultipleFolderFilesPath(c *gin.Context, params FolderFileUpdateMultipleFolderFilesPathParams)
@@ -390,7 +390,7 @@ type ServerInterface interface {
 	UtilBase64ChunkUploadPath(c *gin.Context, params UtilBase64ChunkUploadPathParams)
 	// Check for update
 	// (GET /api/v2/util/check-for-mobile-update/{clientOs}/{clientVersion})
-	UtilCheckForUpdatePath(c *gin.Context, clientOs string, clientVersion string, params UtilCheckForUpdatePathParams)
+	UtilCheckForMobileUpdatePath(c *gin.Context, clientOs string, clientVersion string, params UtilCheckForMobileUpdatePathParams)
 	// Get system config
 	// (POST /api/v2/util/config/{configKey})
 	UtilConfigPath(c *gin.Context, configKey string, params UtilConfigPathParams)
@@ -1061,8 +1061,8 @@ func (siw *ServerInterfaceWrapper) FolderFileDeleteFolderFilesPath(c *gin.Contex
 	siw.Handler.FolderFileDeleteFolderFilesPath(c, folderId, params)
 }
 
-// FolderFileGetFolderFilesAfterMicroTimestampShotAt operation middleware
-func (siw *ServerInterfaceWrapper) FolderFileGetFolderFilesAfterMicroTimestampShotAt(c *gin.Context) {
+// FolderFileGetFolderFilesAfterMicroTimestampTakenOn operation middleware
+func (siw *ServerInterfaceWrapper) FolderFileGetFolderFilesAfterMicroTimestampTakenOn(c *gin.Context) {
 
 	var err error
 
@@ -1096,7 +1096,7 @@ func (siw *ServerInterfaceWrapper) FolderFileGetFolderFilesAfterMicroTimestampSh
 	c.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params FolderFileGetFolderFilesAfterMicroTimestampShotAtParams
+	var params FolderFileGetFolderFilesAfterMicroTimestampTakenOnParams
 
 	headers := c.Request.Header
 
@@ -1126,11 +1126,11 @@ func (siw *ServerInterfaceWrapper) FolderFileGetFolderFilesAfterMicroTimestampSh
 		}
 	}
 
-	siw.Handler.FolderFileGetFolderFilesAfterMicroTimestampShotAt(c, folderId, pivotDate, microTimestamp, params)
+	siw.Handler.FolderFileGetFolderFilesAfterMicroTimestampTakenOn(c, folderId, pivotDate, microTimestamp, params)
 }
 
-// FolderFileGetFolderFilesBeforeMicroTimestampShotAt operation middleware
-func (siw *ServerInterfaceWrapper) FolderFileGetFolderFilesBeforeMicroTimestampShotAt(c *gin.Context) {
+// FolderFileGetFolderFilesBeforeMicroTimestampTakenOn operation middleware
+func (siw *ServerInterfaceWrapper) FolderFileGetFolderFilesBeforeMicroTimestampTakenOn(c *gin.Context) {
 
 	var err error
 
@@ -1164,7 +1164,7 @@ func (siw *ServerInterfaceWrapper) FolderFileGetFolderFilesBeforeMicroTimestampS
 	c.Set(BearerAuthScopes, []string{})
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params FolderFileGetFolderFilesBeforeMicroTimestampShotAtParams
+	var params FolderFileGetFolderFilesBeforeMicroTimestampTakenOnParams
 
 	headers := c.Request.Header
 
@@ -1194,7 +1194,7 @@ func (siw *ServerInterfaceWrapper) FolderFileGetFolderFilesBeforeMicroTimestampS
 		}
 	}
 
-	siw.Handler.FolderFileGetFolderFilesBeforeMicroTimestampShotAt(c, folderId, pivotDate, microTimestamp, params)
+	siw.Handler.FolderFileGetFolderFilesBeforeMicroTimestampTakenOn(c, folderId, pivotDate, microTimestamp, params)
 }
 
 // FolderFileUpdateMultipleFolderFilesPath operation middleware
@@ -1602,8 +1602,8 @@ func (siw *ServerInterfaceWrapper) UtilBase64ChunkUploadPath(c *gin.Context) {
 	siw.Handler.UtilBase64ChunkUploadPath(c, params)
 }
 
-// UtilCheckForUpdatePath operation middleware
-func (siw *ServerInterfaceWrapper) UtilCheckForUpdatePath(c *gin.Context) {
+// UtilCheckForMobileUpdatePath operation middleware
+func (siw *ServerInterfaceWrapper) UtilCheckForMobileUpdatePath(c *gin.Context) {
 
 	var err error
 
@@ -1626,7 +1626,7 @@ func (siw *ServerInterfaceWrapper) UtilCheckForUpdatePath(c *gin.Context) {
 	}
 
 	// Parameter object where we will unmarshal all parameters from the context
-	var params UtilCheckForUpdatePathParams
+	var params UtilCheckForMobileUpdatePathParams
 
 	headers := c.Request.Header
 
@@ -1656,7 +1656,7 @@ func (siw *ServerInterfaceWrapper) UtilCheckForUpdatePath(c *gin.Context) {
 		}
 	}
 
-	siw.Handler.UtilCheckForUpdatePath(c, clientOs, clientVersion, params)
+	siw.Handler.UtilCheckForMobileUpdatePath(c, clientOs, clientVersion, params)
 }
 
 // UtilConfigPath operation middleware
@@ -1835,8 +1835,8 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.POST(options.BaseURL+"/api/v2/folder-files/chunk-upload-folder-file-init-upload-id", wrapper.FolderFileGetChunkUploadIdPath)
 	router.POST(options.BaseURL+"/api/v2/folder-files/chunk-upload-folder-file/:folderId", wrapper.FolderFileChunkUploadPath)
 	router.POST(options.BaseURL+"/api/v2/folder-files/delete-files/:folderId", wrapper.FolderFileDeleteFolderFilesPath)
-	router.POST(options.BaseURL+"/api/v2/folder-files/get-folder-files-after-micro-timestamp/:folderId/:pivotDate/:microTimestamp", wrapper.FolderFileGetFolderFilesAfterMicroTimestampShotAt)
-	router.POST(options.BaseURL+"/api/v2/folder-files/get-folder-files-before-micro-timestamp/:folderId/:pivotDate/:microTimestamp", wrapper.FolderFileGetFolderFilesBeforeMicroTimestampShotAt)
+	router.POST(options.BaseURL+"/api/v2/folder-files/get-folder-files-after-micro-timestamp/:folderId/:pivotDate/:microTimestamp", wrapper.FolderFileGetFolderFilesAfterMicroTimestampTakenOn)
+	router.POST(options.BaseURL+"/api/v2/folder-files/get-folder-files-before-micro-timestamp/:folderId/:pivotDate/:microTimestamp", wrapper.FolderFileGetFolderFilesBeforeMicroTimestampTakenOn)
 	router.POST(options.BaseURL+"/api/v2/folder-files/update-multiple-folder-files", wrapper.FolderFileUpdateMultipleFolderFilesPath)
 	router.POST(options.BaseURL+"/api/v2/folder-files/update-single-folder-file", wrapper.FolderFileUpdateSingleFolderFilePath)
 	router.POST(options.BaseURL+"/api/v2/folder/delete-folder/:folderId", wrapper.FolderFileDeleteFolderPath)
@@ -1846,7 +1846,7 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 	router.POST(options.BaseURL+"/api/v2/locker-notes/save-note/:noteId", wrapper.LockerNoteSavePath)
 	router.POST(options.BaseURL+"/api/v2/user/update-profile", wrapper.UserUpdateProfilePath)
 	router.POST(options.BaseURL+"/api/v2/util/base64-chunked-upload-file", wrapper.UtilBase64ChunkUploadPath)
-	router.GET(options.BaseURL+"/api/v2/util/check-for-mobile-update/:clientOs/:clientVersion", wrapper.UtilCheckForUpdatePath)
+	router.GET(options.BaseURL+"/api/v2/util/check-for-mobile-update/:clientOs/:clientVersion", wrapper.UtilCheckForMobileUpdatePath)
 	router.POST(options.BaseURL+"/api/v2/util/config/:configKey", wrapper.UtilConfigPath)
 	router.GET(options.BaseURL+"/api/v2/util/ping", wrapper.UtilPingPath)
 	router.GET(options.BaseURL+"/api/v2/util/user-avatar/:userId", wrapper.UtilDisplayUserAvatarPath)
@@ -1855,53 +1855,54 @@ func RegisterHandlersWithOptions(router gin.IRouter, si ServerInterface, options
 // Base64 encoded, gzipped, json marshaled Swagger object
 var swaggerSpec = []string{
 
-	"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",
+	"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",
+	"CwAA//9qsXdolF8AAA==",
 }
 
 // GetSwagger returns the content of the embedded swagger specification file

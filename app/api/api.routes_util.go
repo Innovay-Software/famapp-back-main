@@ -46,8 +46,8 @@ func (s *ApiServerInterfaceImpl) UtilDisplayUserAvatarPath(c *gin.Context, userI
 }
 
 // Check for front end updates
-func (s *ApiServerInterfaceImpl) UtilCheckForUpdatePath(
-	c *gin.Context, clientOs string, clientVersion string, params UtilCheckForUpdatePathParams,
+func (s *ApiServerInterfaceImpl) UtilCheckForMobileUpdatePath(
+	c *gin.Context, clientOs string, clientVersion string, params UtilCheckForMobileUpdatePathParams,
 ) {
 	// Authenticate caller
 	// pass - public api

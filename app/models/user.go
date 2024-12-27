@@ -16,22 +16,22 @@ import (
 
 type User struct {
 	BaseDbModel
-	FamilyID        int64          `gorm:"column:family_id" json:"familyId"`
-	UUID            uuid.UUID      `gorm:"type:uuid; uniqueIndex; default:uuid_generate_v3(); not null" json:"uuid"`
-	Role            string         `gorm:"type:enum('superadmin', 'admin','manager','member')" json:"role"`
-	Name            string         `gorm:"column:name" json:"name"`
-	Email           string         `gorm:"uniqueIndex" json:"email"`
-	EmailVerifiedAt *time.Time     `gorm:"null" json:"emailVerifiedAt"`
-	Mobile          string         `gorm:"uniqueIndex" json:"mobile"`
-	Avatar          string         `gorm:"column:avatar" json:"avatar"`
-	Password        string         `gorm:"column:password" json:"-"`
-	LockerPasscode  string         `gorm:"column:locker_passcode" json:"lockerPasscode"`
-	RefreshToken    *string        `gorm:"null" json:"-"`
-	DeviceToken     *string        `gorm:"null" json:"-"`
-	Notifications   map[string]any `gorm:"column:notifications;serializer:json" json:"notifications"`
-	Status          bool           `gorm:"default: 1" json:"status"`
-	Family          Family         `gorm:"foreignKey:FamilyID"`
-	Folders         []Folder       `gorm:"many2many:folder_invitees;foreignKey:ID;joinForeignKey:InviteeID;References:ID;joinReferences:FolderID" json:"folders"`
+	FamilyID        uint64     `gorm:"column:family_id" json:"familyId"`
+	UUID            uuid.UUID  `gorm:"type:uuid; uniqueIndex; default:uuid_generate_v3(); not null" json:"uuid"`
+	Role            string     `gorm:"type:enum('superadmin', 'admin','manager','member')" json:"role"`
+	Name            string     `gorm:"column:name" json:"name"`
+	Email           string     `gorm:"uniqueIndex" json:"email"`
+	EmailVerifiedAt *time.Time `gorm:"null" json:"emailVerifiedAt"`
+	Mobile          string     `gorm:"uniqueIndex" json:"mobile"`
+	Avatar          string     `gorm:"column:avatar" json:"avatar"`
+	Password        string     `gorm:"column:password" json:"-"`
+	LockerPasscode  string     `gorm:"column:locker_passcode" json:"lockerPasscode"`
+	RefreshToken    *string    `gorm:"null" json:"-"`
+	DeviceToken     *string    `gorm:"null" json:"-"`
+	Notifications   JSONB      `gorm:"type:jsonb; default:'{\"total\":0}'" json:"notifications"`
+	Status          bool       `gorm:"default: true" json:"status"`
+	Family          Family     `gorm:"foreignKey:FamilyID"`
+	Folders         []Folder   `gorm:"many2many:folder_invitees;foreignKey:ID;joinForeignKey:InviteeID;References:ID;joinReferences:FolderID" json:"folders"`
 	// LockerNotes     []LockerNote `gorm:"foreignKey:OwnerID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL"`
 }
 

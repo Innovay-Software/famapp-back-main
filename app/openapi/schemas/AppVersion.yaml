@@ -5,8 +5,8 @@ required:
   - title
   - content
   - link
-  - file
-  - effectiveDate
+  - downloadUrl
+  - effectiveOn
 properties:
   os:
     type: string
@@ -18,8 +18,8 @@ properties:
     type: string
   link:
     type: string
-  file:
+  downloadUrl:
     type: string
-  effectiveDate:
+  effectiveOn:
     type: string
     format: date

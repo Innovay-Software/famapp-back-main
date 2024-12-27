@@ -8,6 +8,7 @@ post:
   parameters:
     - $ref: "../../headers/acceptLanguageHeader.yaml"
   requestBody:
+    required: true
     content:
       application/json:
         schema:
@@ -21,24 +22,29 @@ post:
           properties:
             name:
               type: string
+              nullable: true
               x-oapi-codegen-extra-tags:
                 validate: omitempty,min=1,max=40
             mobile:
               type: string
+              nullable: true
               x-oapi-codegen-extra-tags:
                 validate: omitempty,min=4,max=20
             password:
               type: string
+              nullable: true
               x-oapi-codegen-extra-tags:
                 validate: omitempty,min=6,max=50
             lockerPasscode:
               type: string
+              nullable: true
               x-oapi-codegen-extra-tags:
                 validate: omitempty,min=6,max=6
             avatarUrl:
               type: string
+              nullable: true
               x-oapi-codegen-extra-tags:
-                validate: omitempty
+                validate: omitempty,min=1
   allOf:
     - $ref: "../../response/commonErrorResponses.yaml"
     - responses:

@@ -1,5 +1,7 @@
 package dto
 
+import "github.com/innovay-software/famapp-main/app/models"
+
 type GetConfigResponse struct {
 	ApiResponseBase `json:",squash"`
 	ConfigValue     string `json:"configValue"`
@@ -13,12 +15,12 @@ type GetConfigResponse struct {
 
 type CheckForUpdateResponse struct {
 	ApiResponseBase `json:",squash"`
-	HasUpdate       bool   `json:"hasUpdate"`
-	ForceUpdate     bool   `json:"forceUpdate"`
-	Version			string `json:"version"`
-	Title           string `json:"title"`
-	Content         string `json:"content"`
-	Url             string `json:"url"`
+	HasUpdate       bool         `json:"hasUpdate"`
+	ForceUpdate     bool         `json:"forceUpdate"`
+	Version         string       `json:"version"`
+	Title           string       `json:"title"`
+	Content         models.JSONB `json:"content"`
+	Url             string       `json:"url"`
 }
 
 type PingResponse struct {

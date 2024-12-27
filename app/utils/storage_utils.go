@@ -3,6 +3,7 @@ package utils
 import (
 	"os"
 	"path"
+
 )
 
 // Get root absoluate path
@@ -24,5 +25,5 @@ func GetStorageAbsPath(disk string, relativePath string) string {
 
 // Construct an url to access the local file
 func GetUrlPath(disk string, relativePath string) string {
-	return path.Join(os.Getenv("APP_HOME"), disk, relativePath)
+	return os.Getenv("APP_HOME") + "/" + path.Join(disk, relativePath)
 }

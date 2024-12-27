@@ -36,7 +36,7 @@ func ExtractFileMetadata(fileAbsPath string) *map[string]any {
 		}
 	}
 
-	shotAtDate := time.Now()
+	takenOnDate := time.Now()
 	if exifDataMap, exists := metadata["exif"]; exists {
 		exifDataMapPointer, ok := exifDataMap.(map[string]any)
 		if !ok {
@@ -44,13 +44,13 @@ func ExtractFileMetadata(fileAbsPath string) *map[string]any {
 		}
 		extractedDateTime, err := extractDateTimeFromExifMap(&exifDataMapPointer)
 		if err == nil {
-			shotAtDate = extractedDateTime
+			takenOnDate = extractedDateTime
 		} else {
 			utils.LogWarning("Warning:", err)
 		}
 	}
 
-	metadata["shot_at_date_time"] = shotAtDate
+	metadata["taken_on_date_time"] = takenOnDate
 	return &metadata
 }
 
@@ -78,7 +78,6 @@ func extractDateTimeFromExifMap(exifMap *map[string]any) (time.Time, error) {
 				dateTimeParseLayout += " " + "-0700"
 			}
 
-			// fmt.Println("dateTimeParseString=", dateTimeParseString)
 			return time.Parse(dateTimeParseLayout, dateTimeParseString)
 		}
 	}

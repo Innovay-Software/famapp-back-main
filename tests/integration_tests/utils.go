@@ -90,7 +90,7 @@ func processApiResponse(
 	if jsonMap["success"] == nil {
 		utils.LogError("Invalid api response")
 		utils.LogError(string(bytes))
-		return errors.New("Invalid api response format")
+		return errors.New("invalid api response format")
 	}
 
 	if jsonMap["accessToken"] != "" {

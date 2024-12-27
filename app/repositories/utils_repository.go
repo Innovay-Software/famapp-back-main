@@ -21,9 +21,9 @@ func (rp *utilsRepo) GetLatestAppVersion(
 ) {
 	db := rp.readDBCon
 	var appVersion models.AppVersion
-	err := db.Order("effective_date desc").
+	err := db.Order("effective_on desc").
 		Where("os = ?", os).
-		Where("effective_date <= ?", time.Now()).
+		Where("effective_on <= ?", time.Now()).
 		First(&appVersion).Error
 
 	return &appVersion, err

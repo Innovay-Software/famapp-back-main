@@ -44,11 +44,11 @@ func truncateAllTables() error {
 	db := services.GetMainDBConnection()
 	tables := getTableNames()
 	for _, tableName := range tables {
-		q1 := fmt.Sprintf("TRUNCATE TABLE `%s`", tableName)
+		q1 := fmt.Sprintf("TRUNCATE TABLE %s", tableName)
 		if err := db.Exec(q1).Error; err != nil {
 			return err
 		}
-		q2 := fmt.Sprintf("ALTER TABLE %s AUTO_INCREMENT=1", tableName)
+		q2 := fmt.Sprintf("ALTER SEQUENCE %s_id_seq restart with 1", tableName)
 		if err := db.Exec(q2).Error; err != nil {
 			return err
 		}
@@ -56,14 +56,12 @@ func truncateAllTables() error {
 
 	// Create the first super admin user account
 	user1 := models.User{
-		BaseDbModel: models.BaseDbModel{
-			ID: 1,
-		},
 		UUID:           uuid.New(),
 		Name:           superAdminName,
 		Mobile:         superAdminMobile,
 		LockerPasscode: superAdminPassword,
 		Role:           "admin",
+		Status:			true,
 	}
 	user1.SetPassword(superAdminPassword)
 	repositories.SaveDbModel(&user1)

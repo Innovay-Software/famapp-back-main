@@ -1,7 +1,6 @@
 package app
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -152,7 +151,6 @@ func (a ApiApp) createDefaultAdminUser() {
 	if err != nil {
 		// Not able to find admin user
 		uuid, _ := uuid.FromBytes([]byte(os.Getenv("ADMIN_UUID")))
-		fmt.Println("uuid = ", uuid, "and", os.Getenv("ADMIN_UUID"))
 		user := &models.User{
 			BaseDbModel: models.BaseDbModel{
 				ID: 1,

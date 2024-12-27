@@ -18,8 +18,6 @@ const (
 	FolderFileThumbnailSize int = 250
 )
 
-var root string = ""
-
 
 // Environment Overwirtes are used for different phases for production.
 // Supported phases are: prod, local/dev, test(unit and integration)
@@ -27,8 +25,8 @@ var ProdServerEnvOverwrites = map[string]string{
 	"STORAGE_DIR":                      ProdStorageDir,
 }
 var LocalServerEnvOverwrites = map[string]string{
-	"DB_MAIN_DATABASE":                 "famapp_local_testing",
-	"DB_READ_DATABASE":                 "famapp_local_testing",
+	"DB_MAIN_SEARCH_PATH":				"famapp_local_testing",
+	"DB_READ_SEARCH_PATH":				"famapp_local_testing",
 	"MONGO_DATABASE":					"famapp_local_testing",
 	"STORAGE_DIR":                      LocalStorageDir,
 	"GOOGLE_CLOUD_STORAGE_BUCKET_NAME": "ijayden_testing",
@@ -36,8 +34,8 @@ var LocalServerEnvOverwrites = map[string]string{
 	"HWY_BUCKET_NAME":                  "babyphotos-testing",
 }
 var UnitTestEnvOverwrites = map[string]string{
-	"DB_MAIN_DATABASE":                 "famapp_unit_testing",
-	"DB_READ_DATABASE":                 "famapp_unit_testing",
+	"DB_MAIN_SEARCH_PATH":				"famapp_unit_testing",
+	"DB_READ_SEARCH_PATH":				"famapp_unit_testing",
 	"MONGO_DATABASE":					"famapp_unit_testing",
 	"STORAGE_DIR":                      UnitTestStorageDir,
 	"GOOGLE_CLOUD_STORAGE_BUCKET_NAME": "ijayden_unit_testing",

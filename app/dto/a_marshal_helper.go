@@ -12,17 +12,17 @@ func marshalFolder(folder *models.Folder) ([]byte, error) {
 	// Define a temporary struct to hold the marshalled data
 	type FolderMarshal struct {
 		models.BaseDbModel
-		OwnerID              int64                `json:"ownerId"`
-		ParentID             int64                `json:"parentId"`
+		OwnerID              uint64               `json:"ownerId"`
+		ParentID             uint64               `json:"parentId"`
 		Title                string               `json:"title"`
 		Cover                string               `json:"cover"`
 		Type                 string               `json:"type"`
 		Metadata             map[string]any       `json:"metadata"`
 		IsDefault            bool                 `json:"isDefault"`
 		IsPrivate            bool                 `json:"isPrivate"`
-		TotalFiles           int64                `json:"totalFiles"`
-		EarliestShotAt       *time.Time           `json:"earliestShotAt"`
-		LatestShotAt         *time.Time           `json:"latestShotAt"`
+		TotalFiles           uint64               `json:"totalFiles"`
+		EarliestTakenOn      *time.Time           `json:"earliestTakenOn"`
+		LatestTakenOn        *time.Time           `json:"latestTakenOn"`
 		Invitees             []*models.UserMember `json:"invitees"`
 		PopulatedSubFolders  *[]models.Folder     `json:"subFolders"`
 		PopulatedLatestPosts *[]models.FolderFile `json:"latestPosts"`

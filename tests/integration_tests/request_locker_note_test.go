@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/innovay-software/famapp-main/app/api"
 	"github.com/innovay-software/famapp-main/app/dto"
+	"github.com/innovay-software/famapp-main/app/utils"
 )
 
 // Calling API Endpoint
@@ -24,7 +25,7 @@ func listLockerNotes(
 
 // Calling API Endpoint
 func createLockerNotes(
-	r *gin.Engine, token, title, content string, inviteeIDs []int64,
+	r *gin.Engine, token, title, content string, inviteeIDs []uint64,
 ) (
 	*dto.SaveLockerNoteResponse, error,
 ) {
@@ -33,7 +34,7 @@ func createLockerNotes(
 
 // Calling API Endpoint
 func saveLockerNotes(
-	r *gin.Engine, token string, id int64, title, content string, inviteeIDs []int64,
+	r *gin.Engine, token string, id uint64, title, content string, inviteeIDs []uint64,
 ) (
 	*dto.SaveLockerNoteResponse, error,
 ) {
@@ -44,7 +45,7 @@ func saveLockerNotes(
 		&api.LockerNoteSavePathJSONRequestBody{
 			Title:      title,
 			Content:    content,
-			InviteeIds: &inviteeIDs,
+			InviteeIds: utils.Uint64SliceToInt64(&inviteeIDs),
 		},
 		&resModel,
 	)
@@ -53,7 +54,7 @@ func saveLockerNotes(
 
 // Calling API Endpoint
 func deleteLockerNotes(
-	r *gin.Engine, token string, id int64,
+	r *gin.Engine, token string, id uint64,
 ) (
 	*dto.DeleteLockerNoteResponse, error,
 ) {

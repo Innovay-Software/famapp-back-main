@@ -11,12 +11,13 @@ import (
 	"github.com/redis/go-redis/v9"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"gorm.io/driver/mysql"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
 var mainDB *gorm.DB
 var readDB *gorm.DB
+
 // var mongoUsersColl *mongo.Collection
 
 // Get MainDB Connection (Write)
@@ -24,7 +25,7 @@ func GetMainDBConnection() *gorm.DB {
 	if mainDB != nil {
 		return mainDB
 	}
-	mainDB = _getDBConnection("DB_MAIN_")
+	mainDB = getDBConnection("DB_MAIN_")
 	return mainDB
 }
 
@@ -33,24 +34,25 @@ func GetReadDBConnection() *gorm.DB {
 	if readDB != nil {
 		return readDB
 	}
-	readDB = _getDBConnection("DB_READ_")
+	readDB = getDBConnection("DB_READ_")
 	return readDB
 }
 
 // Get DB Connection Helper
-func _getDBConnection(envPrefix string) *gorm.DB {
+func getDBConnection(envPrefix string) *gorm.DB {
 	utils.Log("Create DB connection with prefix: ", envPrefix)
 
-	// DB_DSN :=="${DB_USERNAME}:${DB_PASSWORD}@tcp(${DB_HOST}:${DB_PORT})/${DB_DATABASE}?charset=utf8mb4&parseTime=True&loc=Local"
 	dsn := fmt.Sprintf(
-		"%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local",
+		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable search_path=%s",
+		os.Getenv(envPrefix+"HOST"),
 		os.Getenv(envPrefix+"USERNAME"),
 		os.Getenv(envPrefix+"PASSWORD"),
-		os.Getenv(envPrefix+"HOST"),
-		os.Getenv(envPrefix+"PORT"),
 		os.Getenv(envPrefix+"DATABASE"),
+		os.Getenv(envPrefix+"PORT"),
+		os.Getenv(envPrefix+"SEARCH_PATH"),
 	)
-	newDb, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+
+	newDb, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}

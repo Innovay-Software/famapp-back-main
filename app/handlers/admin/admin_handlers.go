@@ -1,6 +1,9 @@
 package admin
 
 import (
+	"crypto/md5"
+	"encoding/hex"
+
 	"github.com/gin-gonic/gin"
 
 	"github.com/innovay-software/famapp-main/app/dto"
@@ -12,16 +15,18 @@ import (
 // Add member (create or update)
 func AdminAddMember(
 	c *gin.Context, admin *models.User,
-	name, mobile, role, password, lockerPasscode string, familyId int,
+	name, mobile, role, password, lockerPasscode string, familyId uint64,
 ) (
 	dto.ApiResponse, error,
 ) {
+	h := md5.New()
+	h.Write([]byte(lockerPasscode))
 	newUser := models.User{
-		FamilyID:       int64(familyId),
+		FamilyID:       familyId,
 		Name:           name,
 		Mobile:         mobile,
 		Role:           role,
-		LockerPasscode: lockerPasscode,
+		LockerPasscode: hex.EncodeToString(h.Sum(nil)),
 	}
 	newUser.SetPassword(password)
 	if err := repositories.UserRepoIns.CreateUser(&newUser); err != nil {
@@ -32,7 +37,7 @@ func AdminAddMember(
 }
 
 func AdminGetMemberListHandler(
-	c *gin.Context, admin *models.User, afterId int64,
+	c *gin.Context, admin *models.User, afterId uint64,
 ) (
 	dto.ApiResponse, error,
 ) {
@@ -51,7 +56,7 @@ func AdminGetMemberListHandler(
 // Update member (Member must already exist)
 func AdminUpdateMember(
 	c *gin.Context, admin *models.User,
-	targetUserId int64, name, mobile, role string, password, lockerPasscode *string, familyId *int,
+	targetUserId uint64, name, mobile, role string, password, lockerPasscode *string, familyId *uint64,
 ) (
 	dto.ApiResponse, error,
 ) {
@@ -70,7 +75,9 @@ func AdminUpdateMember(
 		targetUser.SetPassword(*password)
 	}
 	if lockerPasscode != nil {
-		targetUser.LockerPasscode = *lockerPasscode
+		h := md5.New()
+		h.Write([]byte(*lockerPasscode))
+		targetUser.LockerPasscode = hex.EncodeToString(h.Sum(nil))
 	}
 	if name != "" {
 		targetUser.Name = name
@@ -82,7 +89,7 @@ func AdminUpdateMember(
 		targetUser.Role = role
 	}
 	if familyId != nil {
-		targetUser.FamilyID = int64(*familyId)
+		targetUser.FamilyID = uint64(*familyId)
 	}
 
 	if err := repositories.UserRepoIns.SaveUser(&targetUser); err != nil {
@@ -93,7 +100,9 @@ func AdminUpdateMember(
 }
 
 // Delete member
-func AdminDeleteMember(c *gin.Context, admin *models.User, targetUUID string) (
+func AdminDeleteMember(
+	c *gin.Context, admin *models.User, targetUUID string,
+) (
 	dto.ApiResponse, error,
 ) {
 	repositories.UserRepoIns.DeleteUser("uuid", targetUUID)

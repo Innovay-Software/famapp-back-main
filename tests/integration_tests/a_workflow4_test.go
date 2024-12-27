@@ -57,7 +57,7 @@ func Workflow4A_Test(t *testing.T, r *gin.Engine) {
 	{
 		res, err := saveFolder(
 			r, user1AccessToken, folderId, user1.ID, 0, "Folder1Updated", "",
-			"normal", true, false, nil, []int64{user2.ID},
+			"normal", true, false, nil, []uint64{user2.ID},
 		)
 		tests.AssertNil(t, err)
 		tests.AssertEqual(t, res.Folder.ID, folderId)
@@ -134,7 +134,7 @@ func Workflow4B_Test(t *testing.T, r *gin.Engine) {
 func basicSetupWithLoginAndFolder(
 	t *testing.T, r *gin.Engine, folderName string,
 ) (
-	*models.User, string, int64,
+	*models.User, string, uint64,
 ) {
 
 	// _, b, _, _ := runtime.Caller(0)
@@ -155,7 +155,7 @@ func basicSetupWithLoginAndFolder(
 
 	// Add folder
 	res, _ := saveFolder(r, user1Token, 0, user1ID, 0, folderName, "", "normal",
-		false, false, &map[string]any{}, []int64{})
+		false, false, &map[string]any{}, []uint64{})
 
 	return res1b.User, user1Token, res.Folder.ID
 }

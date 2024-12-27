@@ -3,7 +3,7 @@ package unitTests
 import "github.com/innovay-software/famapp-main/tests"
 
 const (
-	superAdminID       int64  = tests.SuperAdminID
+	superAdminID       uint64 = tests.SuperAdminID
 	superAdminName     string = tests.SuperAdminName
 	superAdminMobile   string = tests.SuperAdminMobile
 	superAdminPassword string = tests.SuperAdminPassword
