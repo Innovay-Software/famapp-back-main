@@ -76,7 +76,7 @@ func UpdateSingleFolderFileHandler(
 		ff.Remark = *remark
 	}
 
-	repositories.SaveDbModel(&ff)
+	repositories.FolderRepoIns.SaveFolderFileModel(&ff)
 	return &dto.UpdateSingleFolderFileResponse{}, nil
 }
 

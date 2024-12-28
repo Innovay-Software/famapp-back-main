@@ -12,9 +12,8 @@ import (
 // This wrapper will check if the input param is a pointer to a DbModel before calling
 // the Save function to try to save it
 
-
-// Save will create the record if the primary key is not provided
-func CreateDbModel(model schema.Tabler) error {
+// create
+func createDbModel(model schema.Tabler) error {
 	modelType := reflect.TypeOf(model).String()
 	if reflect.ValueOf(model).Kind() != reflect.Ptr {
 		return fmt.Errorf("a pointer to a model instance is required, not %s", modelType)
@@ -23,7 +22,7 @@ func CreateDbModel(model schema.Tabler) error {
 }
 
 // Save will create the record if the primary key is not provided
-func SaveDbModel(model schema.Tabler) error {
+func saveDbModel(model schema.Tabler) error {
 	modelType := reflect.TypeOf(model).String()
 	if reflect.ValueOf(model).Kind() != reflect.Ptr {
 		return fmt.Errorf("a pointer to a model instance is required, not %s", modelType)

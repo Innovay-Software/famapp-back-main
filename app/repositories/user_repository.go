@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/innovay-software/famapp-main/app/models"
+	"github.com/innovay-software/famapp-main/app/utils"
 	"gorm.io/gorm"
 )
 
@@ -53,7 +54,7 @@ func (u userRepo) DeleteUser(fieldName string, value string) error {
 		First(&user).Error; err != nil {
 		return err
 	}
-	MongoRepoIns.DeleteUserInMongo(&user)
+
 	return DeleteDbModel(&user)
 }
 
@@ -70,17 +71,23 @@ func (u userRepo) CreateUser(user *models.User) error {
 		return fmt.Errorf("duplicate mobile")
 	}
 
-	err := CreateDbModel(user)
+	err := createDbModel(user)
 	if err != nil {
 		return err
 	}
 
-	MongoRepoIns.CreateUserInMongo(user)
+	utils.LogWarning("New User:", user.Name, user.UUID)
+	MessageQueueRepoIns.sendUserInfoToUserSyncQueue(user)
 	return nil
 }
 
 func (u userRepo) SaveUser(user *models.User) error {
-	return SaveDbModel(user)
+	err := saveDbModel(user)
+	if err != nil {
+		return err
+	}
+	MessageQueueRepoIns.sendUserInfoToUserSyncQueue(user)
+	return nil
 }
 
 func (u userRepo) FindFolders(user *models.User) []*models.Folder {

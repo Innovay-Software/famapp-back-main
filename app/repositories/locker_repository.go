@@ -75,7 +75,7 @@ func (rp *lockerNoteRepo) SaveNote(
 		lockerNote.ID = noteId
 	}
 
-	if err := SaveDbModel(lockerNote); err != nil {
+	if err := saveDbModel(lockerNote); err != nil {
 		return nil, err
 	}
 

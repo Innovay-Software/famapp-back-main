@@ -16,6 +16,8 @@
 ### Commands
 1. To run tests:
 - go test github.com/innovay-software/famapp-main/tests/...
+or without timeouts (in case of testing large file uploads):
+- go test github.com/innovay-software/famapp-main/tests/... -timeout 0
 
 2. To run oapi-codegen to generate code:
 - go generate ./...

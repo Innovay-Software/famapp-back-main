@@ -91,3 +91,34 @@ func extractDateTimeFromExifMap(exifMap *map[string]any) (time.Time, error) {
 
 	return time.Now(), fmt.Errorf("unable to find DateTime in Exif map")
 }
+
+func CompressImageFile(fileAbsPath string) (
+	string, error,
+ ) {
+	newPath, err := utils.CompressImageToJpgWithMaxSize(fileAbsPath, 960)
+	return newPath, err
+}
+
+func CompressVideoFile(fileAbsPath string) (
+	string, error,
+) {
+	newPath, err := utils.CompressVideoToMp4FullHD(fileAbsPath)
+	return newPath, err
+}
+
+func GenerateImageThumbnail(fileAbsPath string, thumbnailAbsPath string) error {
+	_, err := utils.GenerateThumbnailJpg(fileAbsPath, thumbnailAbsPath)
+	return err
+}
+
+func GenerateVideoThumbnail(fileAbsPath string, thumbnailAbsPath string) error {
+	firstFrameFilepath := fileAbsPath + ".frame.jpg"
+	_, err := utils.ExtractVideoFirstFrameAsJpg(fileAbsPath, firstFrameFilepath)
+	if err != nil {
+		return err
+	}
+	defer os.Remove(firstFrameFilepath)
+
+	_, err2 := utils.GenerateThumbnailJpg(firstFrameFilepath, thumbnailAbsPath)
+	return err2
+}

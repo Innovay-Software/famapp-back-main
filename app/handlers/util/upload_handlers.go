@@ -103,7 +103,7 @@ func processUploadedFile(
 		TakenOn:  targetDatetime.UTC(),
 	}
 
-	if err := repositories.SaveDbModel(&uploadIns); err != nil {
+	if err := repositories.UtilsRepoIns.SaveUpload(&uploadIns); err != nil {
 		return nil, fmt.Errorf("unable to save uploadIns")
 	}
 

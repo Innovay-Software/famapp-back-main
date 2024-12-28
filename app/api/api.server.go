@@ -108,6 +108,8 @@ func apiPanicRecoverHandler(c *gin.Context, err any) {
 func api404Handler(c *gin.Context) {
 	c.IndentedJSON(
 		http.StatusNotFound,
-		apiResp(false, apiErrors.ApiError404.Code, apiErrors.ApiError404.Message, nil, c),
+		apiResp(false, apiErrors.ApiError404.Code, apiErrors.ApiError404.Message,
+			apiErrors.ApiError404.RequiresLogin, nil, c,
+		),
 	)
 }

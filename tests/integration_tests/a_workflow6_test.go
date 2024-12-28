@@ -41,7 +41,7 @@ func workflow6A_Test(t *testing.T, r *gin.Engine) {
 	// Reset database
 	resetDatabase()
 
-	errC := insertModel(&models.Config{
+	errC := insertConfig(&models.Config{
 		ConfigKey:   "C1",
 		ConfigValue: "V1",
 		ConfigType:  "text",
@@ -129,9 +129,9 @@ func workflow6C_Test(t *testing.T, r *gin.Engine) {
 		EffectiveOn: time.Now().Add(time.Second * 3600 * 24),
 	}
 
-	errA := insertModel(&iosAppVersion)
-	errB := insertModel(&androidAppVersion1)
-	errC := insertModel(&androidAppVersion2)
+	errA := insertAppVersion(&iosAppVersion)
+	errB := insertAppVersion(&androidAppVersion1)
+	errC := insertAppVersion(&androidAppVersion2)
 	tests.AssertNil(t, errA)
 	tests.AssertNil(t, errB)
 	tests.AssertNil(t, errC)

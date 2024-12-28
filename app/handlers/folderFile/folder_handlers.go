@@ -39,7 +39,7 @@ func SaveFolderHandler(
 		folder.Metadata = *metadata
 	}
 
-	if err := repositories.SaveDbModel(&folder); err != nil {
+	if err := repositories.FolderRepoIns.SaveFolderModel(user, &folder); err != nil {
 		return nil, err
 	}
 

@@ -5,17 +5,12 @@ import (
 
 	"github.com/innovay-software/famapp-main/app/services"
 	"github.com/redis/go-redis/v9"
-	"go.mongodb.org/mongo-driver/mongo"
 	"gorm.io/gorm"
 )
 
 // DB connection
 var mainDBCon *gorm.DB
 var readDBCon *gorm.DB
-
-// Mongo Collections
-var mongoDB *mongo.Database
-var mongoUsersColl *mongo.Collection
 
 // Redis connection
 var redisCon *redis.Client
@@ -29,14 +24,13 @@ var FolderRepoIns *folderRepo
 var CloudUploadRepoIns *cloudUploadRepo
 var JobRepoIns *jobRepo
 var UtilsRepoIns *utilsRepo
-var MongoRepoIns *mongoRepo
+var MessageQueueRepoIns *messageQueueRepo
 
 func RepoInit() {
 
 	// Init database and redis
 	dbInit()
 	redisInit()
-	mongoInit()
 
 	ConfigRepoIns = &configRepo{
 		mainDBCon: mainDBCon,
@@ -69,9 +63,8 @@ func RepoInit() {
 		mainDBCon: mainDBCon,
 		readDBCon: readDBCon,
 	}
-	MongoRepoIns = &mongoRepo{
-		mongoDB:        mongoDB,
-		mongoUsersColl: mongoUsersColl,
+	MessageQueueRepoIns = &messageQueueRepo{
+		redisCon: redisCon,
 	}
 }
 
@@ -82,9 +75,4 @@ func dbInit() {
 
 func redisInit() {
 	redisCon, redisCtx = services.GetRedisConnection()
-}
-
-func mongoInit() {
-	mongoDB = services.GetMongoDBConnection()
-	mongoUsersColl = mongoDB.Collection("users")
 }

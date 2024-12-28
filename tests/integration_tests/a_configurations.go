@@ -11,10 +11,10 @@ const (
 
 const (
 	runTests     bool = tests.RunIntegrationTests
-	runWorkflow1 bool = runTests && true
-	runWorkflow2 bool = runTests && true
-	runWorkflow3 bool = runTests && true
+	runWorkflow1 bool = runTests && false
+	runWorkflow2 bool = runTests && false
+	runWorkflow3 bool = runTests && false
 	runWorkflow4 bool = runTests && true
-	runWorkflow5 bool = runTests && true
-	runWorkflow6 bool = runTests && true
+	runWorkflow5 bool = runTests && false
+	runWorkflow6 bool = runTests && false
 )

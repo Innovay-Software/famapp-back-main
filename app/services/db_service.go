@@ -17,6 +17,7 @@ import (
 
 var mainDB *gorm.DB
 var readDB *gorm.DB
+var redisDB *redis.Client
 
 // var mongoUsersColl *mongo.Collection
 
@@ -92,13 +93,16 @@ func GetMongoDBConnection() *mongo.Database {
 func GetRedisConnection() (
 	*redis.Client, context.Context,
 ) {
-	ctx := context.Background()
+	if redisDB != nil {
+		return redisDB, context.Background()
+	}
 
 	rdb := redis.NewClient(&redis.Options{
 		Addr:     os.Getenv("REDIS_DSN"),
+		Username: os.Getenv("REDIS_USERNAME"),
 		Password: os.Getenv("REDIS_PASSWORD"),
 		DB:       0, // use default DB
 	})
 
-	return rdb, ctx
+	return rdb, context.Background()
 }

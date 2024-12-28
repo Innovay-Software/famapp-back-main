@@ -137,7 +137,7 @@ func (a ApiApp) createStaticAndStorageDirsIfNotExist(storageDir string) {
 
 // Gets the port from env, if not found, use the default from config
 func getPortString() string {
-	port := os.Getenv("PORT")
+	port := os.Getenv("WEB_SERVER_PORT")
 	if port == "" {
 		utils.LogWarning("Missing port, defaulting to", config.DefaultPort)
 		port = config.DefaultPort

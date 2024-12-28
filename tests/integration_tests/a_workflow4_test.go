@@ -8,6 +8,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/innovay-software/famapp-main/app"
+	"github.com/innovay-software/famapp-main/app/jobs"
 	"github.com/innovay-software/famapp-main/app/models"
 	"github.com/innovay-software/famapp-main/tests"
 )
@@ -24,7 +25,8 @@ func TestWorkflow4(t *testing.T) {
 	gin, _ := app.InitApiIntegrationTestServer(fmt.Sprintf("%s/../..", projDir))
 
 	Workflow4A_Test(t, gin)
-	// Workflow4B_Test(t, gin)
+	Workflow4B_Test(t, gin)
+	Workflow4C_Test(t, gin)
 }
 
 // Basic Folder CRUD
@@ -101,22 +103,129 @@ func Workflow4A_Test(t *testing.T, r *gin.Engine) {
 
 // Basic Upload
 func Workflow4B_Test(t *testing.T, r *gin.Engine) {
-	logWorkflowSuccess("Workflow4B_Test: FolderFile - BasicUpload")
+	logWorkflowSuccess("Workflow4B_Test: FolderFile - BasicUpload and Share")
 
-	// _, b, _, _ := runtime.Caller(0)
-	// projDir := filepath.Dir(b)
-
-	_, accessToken, folderId := basicSetupWithLoginAndFolder(t, r, "Folder1")
-	tests.AssertNotEqual(t, accessToken, "")
+	user1, user1AccessToken, folderId := basicSetupWithLoginAndFolder(t, r, "Folder1")
+	tests.AssertNotEqual(t, user1AccessToken, "")
 	tests.AssertNotEqual(t, folderId, 0)
 
+	// Create a second user
+	var user2 *models.User
+	{
+		res1, err1 := createUser(r, "User2", "1234562", "member")
+		tests.AssertNil(t, err1)
+		tests.AssertEqual(t, res1.Member.Mobile, "1234562")
+		tests.AssertNotEqual(t, res1.Member.ID, 0)
+		user2 = res1.Member
+	}
+
+	// Invite User
+	{
+		res, err := saveFolder(
+			r, user1AccessToken, folderId, user1.ID, 0, "Folder1Updated", "",
+			"normal", true, false, nil, []uint64{user2.ID},
+		)
+		tests.AssertNil(t, err)
+		tests.AssertEqual(t, res.Folder.ID, folderId)
+	}
+
 	// Upload to folder
-	res3, err3 := uploadFileToFolderFile(r, accessToken, folderId, "../files/sample-image.jpeg")
-	tests.AssertNil(t, err3)
-	fmt.Println(res3)
-	// panic(errors.New("haha"))
+	{
+		_, err := uploadFileToFolderFile(r, user1AccessToken, folderId, "../files/sample-image.jpeg")
+		tests.AssertNil(t, err)
+		// fmt.Println(res3)
+	}
 
 	// Query latest folder files and the uploaded file should be there
+	{
+		res, err := getLatestFolderFilesBeforeTimestamp(r, user1AccessToken, int64(folderId), "-", 0)
+		tests.AssertNil(t, err)
+		tests.AssertEqual(t, len(*res.FolderFiles), 1)
+	}
+
+	// Set folder file to private and user2 should not be able to see
+	user2AccessToken := ""
+	{
+		isPrivate := true
+		_, err := updateSingleFolderFile(r, user1AccessToken, int64(folderId), nil, &isPrivate)
+		tests.AssertNil(t, err)
+
+		res, _ := mobileCredentialsLogin(r, "1234562", "123456")
+		user2AccessToken = res.AccessToken
+
+		res2, err2 := getLatestFolderFilesBeforeTimestamp(r, user2AccessToken, int64(folderId), "-", 0)
+		tests.AssertNil(t, err2)
+		tests.AssertEqual(t, len(*res2.FolderFiles), 0)
+	}
+
+	// Owner should be able to see
+	{
+		res, err := getLatestFolderFilesBeforeTimestamp(r, user1AccessToken, int64(folderId), "-", 0)
+		tests.AssertNil(t, err)
+		tests.AssertEqual(t, len(*res.FolderFiles), 1)
+	}
+
+	// Set folder file to public and Set a remark to folder file and user2 should be able to see
+	{
+		isPrivate := false
+		newRemark := "this is a new remark"
+		_, err1 := updateSingleFolderFile(r, user1AccessToken, int64(folderId), &newRemark, &isPrivate)
+		tests.AssertNil(t, err1)
+
+		res2, err2 := getLatestFolderFilesBeforeTimestamp(r, user2AccessToken, int64(folderId), "-", 0)
+		tests.AssertNil(t, err2)
+		tests.AssertEqual(t, len(*res2.FolderFiles), 1)
+		tests.AssertEqual(t, (*res2.FolderFiles)[0].Remark, newRemark)
+	}
+
+	// user2 should not be able to update folder file
+	{
+		isPrivate := true
+		newRemark := "this is a new remark"
+		_, err1 := updateSingleFolderFile(r, user2AccessToken, int64(folderId), &newRemark, &isPrivate)
+		tests.AssertNotNil(t, err1)
+	}
+
+	logWorkflowSuccess("Workflow4B_Test: ended")
+}
+
+// Cloud Upload
+func Workflow4C_Test(t *testing.T, r *gin.Engine) {
+	logWorkflowSuccess("Workflow4C_Test: FolderFile - CloudUpload")
+
+	_, user1AccessToken, folderId := basicSetupWithLoginAndFolder(t, r, "Folder1")
+	tests.AssertNotEqual(t, user1AccessToken, "")
+	tests.AssertNotEqual(t, folderId, 0)
+
+	// Upload image to folder
+	{
+		_, err := uploadFileToFolderFile(r, user1AccessToken, folderId, "../files/sample-image.jpeg")
+		tests.AssertNil(t, err)
+		// fmt.Println(res3)
+	}
+
+	// Upload video to folder
+	{
+		_, err := uploadFileToFolderFile(r, user1AccessToken, folderId, "../files/sample-video.mp4")
+		tests.AssertNil(t, err)
+		// fmt.Println(res3)
+	}
+
+	// Run cloud upload job (this is supposed to be managed by cronjobs)
+	jobs.UploadToCloudsJob()
+
+	// Query latest folder files and the uploaded file should be there
+	{
+		res, err := getLatestFolderFilesBeforeTimestamp(r, user1AccessToken, int64(folderId), "-", 0)
+		tests.AssertNil(t, err)
+		tests.AssertEqual(t, len(*res.FolderFiles), 1)
+		folderFile := (*res.FolderFiles)[0]
+		tests.AssertNotEqual(t, folderFile.HwOriginalFilePath, "")
+		tests.AssertNotEqual(t, folderFile.GoogleOriginalFilePath, "")
+		tests.AssertNotEqual(t, folderFile.GoogleFilePath, "")
+		tests.AssertNotEqual(t, folderFile.GoogleThumbnailPath, "")
+		tests.AssertNotEqual(t, folderFile.GoogleDriveFileID, "")
+	}
 
 	// Share folder with user2 and he should see it
 
@@ -130,6 +239,7 @@ func Workflow4B_Test(t *testing.T, r *gin.Engine) {
 
 	logWorkflowSuccess("Workflow4B_Test: ended")
 }
+
 
 func basicSetupWithLoginAndFolder(
 	t *testing.T, r *gin.Engine, folderName string,

@@ -38,3 +38,12 @@ func (rp *jobRepo) GetUploadToGoogleDriveCandidate() (*models.FolderFile, error)
 
 	return &folderFile, nil
 }
+
+func (rp *jobRepo) GetFolderFile(folderFileId uint64) (*models.FolderFile, error) {
+	db := rp.mainDBCon
+	var folderFile models.FolderFile
+	if err := db.Where("id = ?", folderFileId).First(&folderFile).Error; err != nil {
+		return nil, err
+	}
+	return &folderFile, nil
+}

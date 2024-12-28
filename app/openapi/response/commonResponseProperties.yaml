@@ -13,3 +13,7 @@ properties:
     type: string
   refreshToken:
     type: string
+  requiresLogin:
+    type: boolean
+  invalidateAllTokens:
+    type: boolean

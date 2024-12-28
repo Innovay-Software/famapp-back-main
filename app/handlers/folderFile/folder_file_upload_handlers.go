@@ -31,7 +31,7 @@ func FolderFileChunkUploadInitUploadIdHandler(
 		FileType: "others",
 		TakenOn:  time.Now(),
 	}
-	if err := repositories.SaveDbModel(&uploadInstance); err != nil {
+	if err := repositories.UtilsRepoIns.SaveUpload(&uploadInstance); err != nil {
 		return nil, err
 	}
 

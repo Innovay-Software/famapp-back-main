@@ -53,7 +53,7 @@ func (cr *configRepo) UpdateUploadTime() error {
 		return result.Error
 	} else {
 		config.ConfigValue = configVal
-		return SaveDbModel(&config)
+		return saveDbModel(&config)
 	}
 }
 

@@ -6,12 +6,17 @@ import (
 
 // A custom error for api responses, contains error code and message
 type ApiError struct {
-	Code    int
-	Message string
+	Code          int
+	Message       string
+	RequiresLogin bool
 }
 
 // Generic ApiErrors
 var (
+	// Token Errors - Requires Re-Login
+	ApiErrorToken        = ApiError{Code: 9811, Message: "DFE: Invalid Token", RequiresLogin: true}
+	ApiErrorTokenExpired = ApiError{Code: 9812, Message: "DFE: Token Expired", RequiresLogin: true}
+
 	// Common Errors
 	ApiErrorSystem       = ApiError{Code: 9001, Message: "DFE: System error"}
 	ApiErrorParamInvalid = ApiError{Code: 9002, Message: "DFE: Input param invalid"}
@@ -19,11 +24,9 @@ var (
 	ApiError404          = ApiError{Code: 9004, Message: "404 Not Found"}
 
 	// Authorization and Authentication Errors
-	ApiErrorCredentials      = ApiError{Code: 9803, Message: "DFE: Invalid Credentials"}
-	ApiErrorToken            = ApiError{Code: 9804, Message: "DFE: Invalid Token"}
-	ApiErrorTokenExpired     = ApiError{Code: 9805, Message: "DFE: Token Expired"}
-	ApiErrorPermissionDenied = ApiError{Code: 9806, Message: "DFE: Permission Denied"}
-	ApiErrorRequiresAdmin    = ApiError{Code: 9807, Message: "DFE: Permission Denied, Admin Credentials Required"}
+	ApiErrorCredentials      = ApiError{Code: 9801, Message: "DFE: Invalid Credentials"}
+	ApiErrorPermissionDenied = ApiError{Code: 9802, Message: "DFE: Permission Denied"}
+	ApiErrorRequiresAdmin    = ApiError{Code: 9803, Message: "DFE: Permission Denied, Admin Credentials Required"}
 
 	// Request/Response Errors
 	ApiErrorDuplicateMobile = ApiError{Code: 9101, Message: "DFE: Mobile number not available"}

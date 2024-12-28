@@ -61,10 +61,10 @@ func truncateAllTables() error {
 		Mobile:         superAdminMobile,
 		LockerPasscode: superAdminPassword,
 		Role:           "admin",
-		Status:			true,
+		Status:         true,
 	}
 	user1.SetPassword(superAdminPassword)
-	repositories.SaveDbModel(&user1)
+	repositories.UserRepoIns.SaveUser(&user1)
 	log.Println("Purge table succeeded")
 	return nil
 }
@@ -97,8 +97,17 @@ func getTableNames() []string {
 }
 
 // Insert a config record to database
-func insertModel(model schema.Tabler) error {
-	err := repositories.SaveDbModel(model)
+func insertConfig(modelInstance *models.Config) error {
+	err := repositories.UtilsRepoIns.SaveConfig(modelInstance)
+	if err != nil {
+		utils.LogError("Error inserting config: ", err)
+	}
+	return err
+}
+
+// Insert a config record to database
+func insertAppVersion(modelInstance *models.AppVersion) error {
+	err := repositories.UtilsRepoIns.SaveAppVersion(modelInstance)
 	if err != nil {
 		utils.LogError("Error inserting config: ", err)
 	}

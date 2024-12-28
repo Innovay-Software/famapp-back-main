@@ -79,11 +79,22 @@ func (rp *folderRepo) SaveFolder(
 		if err := models.PopulateModelFromMap(folder, *updateData); err != nil {
 			return nil, err
 		}
-		if err := SaveDbModel(folder); err != nil {
+		if err := saveDbModel(folder); err != nil {
 			return nil, err
 		}
 		return folder, nil
 	}
+}
+
+func (rp *folderRepo) SaveFolderModel(
+	user *models.User, folder *models.Folder,
+) error {
+	if !rp.HasFolderUpdatePermission(user, folder) {
+		return errors.ApiErrorPermissionDenied
+	}
+
+	saveDbModel(folder)
+	return nil
 }
 
 // Sync inviteeIDs

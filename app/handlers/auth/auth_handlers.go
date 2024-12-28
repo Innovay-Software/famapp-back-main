@@ -51,7 +51,7 @@ func AccessTokenLoginHandler(
 	dto.ApiResponse, error,
 ) {
 	user.DeviceToken = &deviceToken
-	if err := repositories.SaveDbModel(user); err != nil {
+	if err := repositories.UserRepoIns.SaveUser(user); err != nil {
 		return nil, err
 	}
 
@@ -79,9 +79,8 @@ func generateUserLoggedInData(
 	}
 
 	// Update user to DB
-	repositories.SaveDbModel(user)
-	// Sync user with mongo DB
-	repositories.MongoRepoIns.CreateUserInMongo(user)
+	repositories.UserRepoIns.SaveUser(user)
+
 	folders := repositories.UserRepoIns.FindFolders(user)
 	for _, folder := range folders {
 		folder.Invitees = repositories.FolderRepoIns.FindInvitees(folder)

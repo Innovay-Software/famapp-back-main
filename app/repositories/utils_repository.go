@@ -28,3 +28,19 @@ func (rp *utilsRepo) GetLatestAppVersion(
 
 	return &appVersion, err
 }
+
+func (rp *utilsRepo) SaveUpload(modelInstance *models.Upload) error {
+	return saveDbModel(modelInstance)
+}
+
+func (rp *utilsRepo) SaveConfig(modelInstance *models.Config) error {
+	return saveDbModel(modelInstance)
+}
+
+func (rp *utilsRepo) SaveAppVersion(modelInstance *models.AppVersion) error {
+	return saveDbModel(modelInstance)
+}
+
+func (rp *utilsRepo) SaveTraffic(modelInstance *models.Traffic) error {
+	return saveDbModel(modelInstance)
+}

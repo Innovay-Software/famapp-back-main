@@ -21,7 +21,7 @@ post:
       schema:
         type: string
     - name: microTimestamp
-      description: In unix timestamp format with 6 decimal points (microseconds) precision for seconds, or "-"
+      description: In unix timestamp format with 6 decimal points (microseconds) precision for seconds, or 0
       example: "1723122861000001"
       in: path
       required: true

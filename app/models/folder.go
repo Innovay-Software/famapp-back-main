@@ -5,7 +5,7 @@ import (
 	"time"
 
 	"github.com/innovay-software/famapp-main/app/services"
-	"github.com/innovay-software/famapp-main/app/utils"
+	// "github.com/innovay-software/famapp-main/app/utils"
 )
 
 type Folder struct {
@@ -53,15 +53,15 @@ func (f *Folder) MarshalJSON() ([]byte, error) {
 	// Define a temporary struct to hold the marshalled data
 	type FolderMarshal struct {
 		BaseDbModel
-		OwnerID              uint64          `json:"ownerId"`
-		ParentID             uint64          `json:"parentId"`
+		OwnerID              uint64         `json:"ownerId"`
+		ParentID             uint64         `json:"parentId"`
 		Title                string         `json:"title"`
 		Cover                string         `json:"cover"`
 		Type                 string         `json:"type"`
 		Metadata             map[string]any `json:"metadata"`
 		IsDefault            bool           `json:"isDefault"`
 		IsPrivate            bool           `json:"isPrivate"`
-		TotalFiles           uint64          `json:"totalFiles"`
+		TotalFiles           uint64         `json:"totalFiles"`
 		EarliestTakenOn      *time.Time     `json:"earliestTakenOn"`
 		LatestTakenOn        *time.Time     `json:"latestTakenOn"`
 		Invitees             []*UserMember  `json:"invitees"`
@@ -71,22 +71,22 @@ func (f *Folder) MarshalJSON() ([]byte, error) {
 
 	// Get cover url if it doesn't start with "http"
 	f.PopulateMissingData()
-	f.Cover = utils.GetUrlPath("album-cover", f.Cover)
+	// f.Cover = utils.GetUrlPath("album-cover", f.Cover)
 	return json.Marshal(FolderMarshal(*f))
 }
 
 func (f *Folder) ToClientMap() map[string]any {
 	type FolderForClient struct {
 		BaseDbModel
-		OwnerID              uint64          `json:"ownerId"`
-		ParentID             uint64          `json:"parentId"`
+		OwnerID              uint64         `json:"ownerId"`
+		ParentID             uint64         `json:"parentId"`
 		Title                string         `json:"title"`
 		Cover                string         `json:"cover"`
 		Type                 string         `json:"type"`
 		Metadata             map[string]any `json:"metadata"`
 		IsDefault            bool           `json:"isDefault"`
 		IsPrivate            bool           `json:"isPrivate"`
-		TotalFiles           uint64          `json:"totalFiles"`
+		TotalFiles           uint64         `json:"totalFiles"`
 		EarliestTakenOn      *time.Time     `json:"earliestTakenOn"`
 		LatestTakenOn        *time.Time     `json:"latestTakenOn"`
 		Invitees             []*UserMember  `json:"invitees"`
@@ -96,7 +96,7 @@ func (f *Folder) ToClientMap() map[string]any {
 
 	// Get cover url if it doesn't start with "http"
 	f.PopulateMissingData()
-	f.Cover = utils.GetUrlPath("album-cover", f.Cover)
+	// f.Cover = utils.GetUrlPath("album-cover", f.Cover)
 	t := FolderForClient(*f)
 
 	res := map[string]any{}

@@ -41,8 +41,12 @@ func (rp *folderRepo) CountFilesForTargetUnixTimestamp(timestamp int64) uint64 {
 func (rp *folderRepo) CreateFolderFile(
 	folderFile *models.FolderFile,
 ) error {
-	db := rp.mainDBCon
-	return db.Create(folderFile).Error
+	err := saveDbModel(folderFile)
+	if err != nil {
+		return err
+	}
+	MessageQueueRepoIns.sendFolderFileToFolderFileProcessingQueue(folderFile)
+	return nil
 }
 
 // Delete folder file record
@@ -55,7 +59,7 @@ func (rp *folderRepo) DeleteFolderFile(
 		return err
 	}
 	folderFile.FolderID = 0
-	return SaveDbModel(folderFile)
+	return saveDbModel(folderFile)
 }
 
 func (rp *folderRepo) SaveFolderFileModel(folderFile *models.FolderFile) error {
@@ -65,7 +69,7 @@ func (rp *folderRepo) SaveFolderFileModel(folderFile *models.FolderFile) error {
 
 		// }
 	}
-	return SaveDbModel(folderFile)
+	return saveDbModel(folderFile)
 }
 
 // Update folder file
@@ -96,7 +100,7 @@ func (rp *folderRepo) UpdateFolderFile(
 	if newFolderId >= 0 {
 		folderFile.FolderID = uint64(newFolderId)
 	}
-	saveToDbErr := SaveDbModel(folderFile)
+	saveToDbErr := saveDbModel(folderFile)
 	return folderFile, saveToDbErr
 }
 
@@ -245,8 +249,8 @@ func (rp *folderRepo) getFolderFiles(
 	if folder.OwnerID != user.ID && !user.IsAdmin() {
 		// user is not owner nor admin, check if is an invitee of this folder
 		inviteeRecord := models.FolderInvitee{}
-		if err := db.Where("folder_id = ", folder.ID).
-			Where("invitee_id = ", user.ID).
+		if err := db.Where("folder_id = ?", folder.ID).
+			Where("invitee_id = ?", user.ID).
 			First(&inviteeRecord).Error; err != nil {
 			return &folderFiles, false, err
 		}
@@ -427,7 +431,7 @@ func (rp *folderRepo) RescheduleFolderFiles(
 			continue
 		}
 		ff.TakenOn = time.Unix(newTimestampInSeconds, int64(targetMilliSecond)*1000)
-		SaveDbModel(&ff)
+		saveDbModel(&ff)
 		targetMilliSecond++
 	}
 
